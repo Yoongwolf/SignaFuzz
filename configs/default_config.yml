@@ -1,0 +1,17 @@
+# Default configuration for SS7 Security Research Tool
+
+network:
+  default_protocol: "SCTP"
+  default_port: 2905
+  timeout: 10
+  buffer_size: 4096
+
+logging:
+  level: "INFO"
+  format: "[%(asctime)s] %(levelname)s: %(message)s"
+  date_format: "%Y-%m-%d %H:%M:%S"
+  file: "logs/ss7_tool.log"
+
+defaults:
+  ssn: "6"
+  country_code: "91"
