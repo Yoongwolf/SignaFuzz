@@ -1,62 +1,55 @@
-# tests/test_response_parser.py
-
 import unittest
 from app.response_parser import ResponseParser
 
 class TestResponseParser(unittest.TestCase):
-    
     def test_parse_empty_response(self):
-        # Test handling of empty response
-        result = ResponseParser.parse_response(b'')
-        self.assertEqual(result["status"], "empty")
-    
+        """Test parsing an empty response."""
+        result = ResponseParser.parse_response(b"")
+        self.assertEqual(result["status"], "no_response")
+        self.assertEqual(result["message"], "No response received")
+
+    def test_parse_short_response(self):
+        """Test parsing a too-short response."""
+        result = ResponseParser.parse_response(b"\x00\x01\x02")
+        self.assertEqual(result["status"], "error")
+        self.assertEqual(result["message"], "Response too short")
+
     def test_parse_simple_response(self):
-        # Test parsing of a simple response
-        response = b'\x01\x02\x03\x04\x05'
+        """Test parsing a valid SRI response."""
+        response = bytes.fromhex("0202020201043011800821436587092143F581058967452301")
         result = ResponseParser.parse_response(response)
-        
-        self.assertEqual(result["status"], "received")
-        self.assertEqual(result["length"], 5)
-        self.assertEqual(result["raw_hex"], "0102030405")
-    
-    def test_parse_tcap_result(self):
-        # Test parsing of a TCAP result response
-        # Creating a mock TCAP response with result tag at position 5
-        response = b'\x01\x02\x03\x04\x05\xA2\x07\x08\x00\x0A\x0B\x0C'
-        result = ResponseParser.parse_response(response)
-        
-        self.assertEqual(result["type"], "TCAP_RESULT")
-        self.assertEqual(result["operation_status"], "success")
-    
+        self.assertEqual(result["status"], "success")
+        self.assertEqual(result["invoke_id"], 0x02)
+        self.assertEqual(result["opcode"], 0x04)
+        self.assertEqual(result["params"]["imsi"], "123456789012345")
+        self.assertEqual(result["params"]["msisdn"], "9876543210")
+
     def test_format_empty_response(self):
-        # Test formatting of an empty response
-        parsed = {"status": "empty"}
+        """Test formatting an empty response."""
+        parsed = {"status": "no_response", "message": "No response received"}
         formatted = ResponseParser.format_response(parsed)
-        self.assertIn("No response received", formatted)
-    
+        self.assertEqual(formatted, "⚠️ No response received")
+
     def test_format_error_response(self):
-        # Test formatting of an error response
-        parsed = {"status": "error", "error": "Test error"}
+        """Test formatting an error response."""
+        parsed = {"status": "error", "message": "Invalid response"}
         formatted = ResponseParser.format_response(parsed)
-        self.assertIn("Error parsing response", formatted)
-        self.assertIn("Test error", formatted)
-    
+        self.assertEqual(formatted, "⚠️ Response Error: Invalid response")
+
     def test_format_success_response(self):
-        # Test formatting of a successful response
+        """Test formatting a successful response."""
         parsed = {
-            "status": "received",
-            "length": 10,
-            "raw_hex": "0102030405060708090A",
-            "type": "TCAP_RESULT",
-            "operation_status": "success"
+            "status": "success",
+            "invoke_id": 2,
+            "opcode": 0x04,
+            "params": {"imsi": "123456789012345", "msisdn": "9876543210"}
         }
         formatted = ResponseParser.format_response(parsed)
-        
-        self.assertIn("Response received", formatted)
-        self.assertIn("Size: 10 bytes", formatted)
-        self.assertIn("0102030405060708090A", formatted)
-        self.assertIn("TCAP_RESULT", formatted)
-        self.assertIn("SUCCESS", formatted)
+        self.assertIn("Parsed MAP Response", formatted)
+        self.assertIn("Invoke ID: 2", formatted)
+        self.assertIn("Opcode: SendRoutingInfo (0x04)", formatted)
+        self.assertIn("Imsi: 123456789012345", formatted)
+        self.assertIn("Msisdn: 9876543210", formatted)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

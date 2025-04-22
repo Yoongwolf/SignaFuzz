@@ -1,103 +1,128 @@
-# app/message_factory.py
-
-import logging
-from scapy.packet import Packet
+from dataclasses import dataclass
+from typing import Optional
 from utils.encoding.bcd import encode_bcd
-from utils.protocols.ss7_layers import MAP
+from utils.validators import validate_imsi, validate_msisdn
+
+@dataclass
+class MAPMessage:
+    invoke_id: int
+    opcode: int
+    params: bytes
 
 class MessageFactory:
-    """
-    Factory for creating different types of MAP messages.
-    """
-    
     @staticmethod
-    def create_send_routing_info(imsi: str, msisdn: str = None) -> Packet:
+    def create_send_routing_info(imsi: str, msisdn: Optional[str] = None) -> MAPMessage:
         """
-        Create a SendRoutingInfo (SRI) MAP message.
-        
+        Create a SendRoutingInfo MAP message.
+
         Args:
             imsi: International Mobile Subscriber Identity
-            msisdn: Mobile Station ISDN number (optional)
-            
+            msisdn: Mobile Station International Subscriber Directory Number (optional)
+
         Returns:
-            Scapy packet with MAP layer
+            MAPMessage object
+
+        Raises:
+            ValueError: If IMSI or MSISDN is invalid
         """
-        bcd_imsi = encode_bcd(imsi)
-        
-        map_layer = MAP(
+        if not validate_imsi(imsi):
+            raise ValueError("Invalid IMSI: must be 15 digits")
+        if msisdn and not validate_msisdn(msisdn):
+            raise ValueError("Invalid MSISDN: must be 10-15 digits")
+
+        imsi_bytes = encode_bcd(imsi)
+        params = bytes([0x80, len(imsi_bytes)]) + imsi_bytes
+        if msisdn:
+            msisdn_bytes = encode_bcd(msisdn)
+            params += bytes([0x81, len(msisdn_bytes)]) + msisdn_bytes
+
+        return MAPMessage(
             invoke_id=0x02,
-            opcode_tag=0x02,
-            opcode_length=1,
-            opcode=0x04,  # SendRoutingInfo
-            param_tag=0x30,
-            param_length=2 + 2 + len(bcd_imsi),  # imsi_tag + length + bcd_imsi
-            imsi_tag=0x80,
-            imsi_length=len(bcd_imsi),
-            imsi=bcd_imsi
+            opcode=0x04,  # SRI opcode
+            params=params
         )
-        
-        logging.debug(f"Created SendRoutingInfo message for IMSI: {imsi}")
-        return map_layer
-    
+
     @staticmethod
-    def create_any_time_interrogation(imsi: str) -> Packet:
+    def create_any_time_interrogation(imsi: str) -> MAPMessage:
         """
-        Create an AnyTimeInterrogation (ATI) MAP message.
-        
+        Create an AnyTimeInterrogation MAP message.
+
         Args:
             imsi: International Mobile Subscriber Identity
-            
+
         Returns:
-            Scapy packet with MAP layer
+            MAPMessage object
+
+        Raises:
+            ValueError: If IMSI is invalid
         """
-        bcd_imsi = encode_bcd(imsi)
-        
-        map_layer = MAP(
+        if not validate_imsi(imsi):
+            raise ValueError("Invalid IMSI: must be 15 digits")
+
+        imsi_bytes = encode_bcd(imsi)
+        params = bytes([0x80, len(imsi_bytes)]) + imsi_bytes
+
+        return MAPMessage(
             invoke_id=0x02,
-            opcode_tag=0x02,
-            opcode_length=1,
-            opcode=0x71,  # AnyTimeInterrogation
-            param_tag=0x30,
-            param_length=2 + 2 + len(bcd_imsi),  # imsi_tag + length + bcd_imsi
-            imsi_tag=0x80,
-            imsi_length=len(bcd_imsi),
-            imsi=bcd_imsi
+            opcode=0x71,  # ATI opcode
+            params=params
         )
-        
-        logging.debug(f"Created AnyTimeInterrogation message for IMSI: {imsi}")
-        return map_layer
-    
+
     @staticmethod
-    def create_update_location(imsi: str, vlr_number: str) -> Packet:
+    def create_update_location(imsi: str, vlr_number: str) -> MAPMessage:
         """
         Create an UpdateLocation MAP message.
-        
+
         Args:
             imsi: International Mobile Subscriber Identity
-            vlr_number: VLR number
-            
+            vlr_number: Visitor Location Register number
+
         Returns:
-            Scapy packet with MAP layer
+            MAPMessage object
+
+        Raises:
+            ValueError: If IMSI or VLR number is invalid
         """
-        bcd_imsi = encode_bcd(imsi)
-        bcd_vlr = encode_bcd(vlr_number)
-        
-        # UpdateLocation has different parameters
-        map_layer = MAP(
-            invoke_id=0x02,
-            opcode_tag=0x02,
-            opcode_length=1,
-            opcode=0x02,  # UpdateLocation
-            param_tag=0x30,
-            param_length=2 + 2 + len(bcd_imsi) + 2 + 2 + len(bcd_vlr),
-            imsi_tag=0x80,
-            imsi_length=len(bcd_imsi),
-            imsi=bcd_imsi,
-            # Additional fields for UpdateLocation
-            vlr_tag=0x81,
-            vlr_length=len(bcd_vlr),
-            vlr_number=bcd_vlr
+        if not validate_imsi(imsi):
+            raise ValueError("Invalid IMSI: must be 15 digits")
+        if not validate_msisdn(vlr_number):  # Using MSISDN validator for VLR
+            raise ValueError("Invalid VLR number: must be 10-15 digits")
+
+        imsi_bytes = encode_bcd(imsi)
+        vlr_bytes = encode_bcd(vlr_number)
+        params = (
+            bytes([0x80, len(imsi_bytes)]) + imsi_bytes +
+            bytes([0x81, len(vlr_bytes)]) + vlr_bytes
         )
-        
-        logging.debug(f"Created UpdateLocation message for IMSI: {imsi}, VLR: {vlr_number}")
-        return map_layer
+
+        return MAPMessage(
+            invoke_id=0x02,
+            opcode=0x02,  # UL opcode
+            params=params
+        )
+
+    @staticmethod
+    def create_provide_subscriber_info(imsi: str) -> MAPMessage:
+        """
+        Create a ProvideSubscriberInfo MAP message.
+
+        Args:
+            imsi: International Mobile Subscriber Identity
+
+        Returns:
+            MAPMessage object
+
+        Raises:
+            ValueError: If IMSI is invalid
+        """
+        if not validate_imsi(imsi):
+            raise ValueError("Invalid IMSI: must be 15 digits")
+
+        imsi_bytes = encode_bcd(imsi)
+        params = bytes([0x80, len(imsi_bytes)]) + imsi_bytes
+
+        return MAPMessage(
+            invoke_id=0x02,
+            opcode=0x70,  # PSI opcode
+            params=params
+        )
