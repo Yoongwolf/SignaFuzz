@@ -1,3 +1,220 @@
 [2025-04-21 14:24:11] INFO: [MAP] Packet (hex): 02020104300C800821436587092143F5
 [2025-04-21 14:24:11] ERROR: [SCTP] Connection failed: [Errno -2] Name or service not known
 [2025-04-21 14:24:11] ERROR: [SEND] Error during sending: [Errno -2] Name or service not known
+[2025-04-22 15:33:34] INFO: Sending sri message to 192.168.1.1:2905
+[2025-04-22 15:33:34] INFO: [MAP] Packet (hex): 0201020201043011800821436587092143F581058967452301
+[2025-04-22 15:49:28] INFO: Sending sri message to 192.168.1.1:2905
+[2025-04-22 15:49:28] INFO: [MAP] Packet (hex): 0201020201043011800821436587092143F581058967452301
+[2025-04-22 15:49:33] ERROR: Connection to 192.168.1.1:2905 timed out after 5.0s
+[2025-04-22 15:49:33] ERROR: Error during operation: name 'socket' is not defined
+[2025-04-22 16:09:11] INFO: Sending sri message to 127.0.0.1:2905
+[2025-04-22 16:09:11] ERROR: Error during operation: 'Ss7Tool' object has no attribute 'send_message'
+[2025-04-22 16:18:40] INFO: API key authenticated
+[2025-04-22 16:18:40] INFO: Sending sri message to 127.0.0.1:2905
+[2025-04-22 16:18:40] INFO: [MAP] Packet (hex): 0201020201043011800821436587092143F581058967452301
+[2025-04-22 16:18:40] INFO: Successfully connected to 127.0.0.1:2905
+[2025-04-22 16:18:45] ERROR: Send/receive timeout for 127.0.0.1:2905 after 5.0s
+[2025-04-22 16:18:45] ERROR: Error during operation: name 'sctp' is not defined
+[2025-04-22 16:19:12] INFO: API key authenticated
+[2025-04-22 16:19:40] INFO: [MAP] Packet (hex): 0201020201043011800821436587092143F581058967452301
+[2025-04-22 16:19:40] INFO: Successfully connected to 127.0.0.1:2905
+[2025-04-22 16:19:45] ERROR: Send/receive timeout for 127.0.0.1:2905 after 5.0s
+[2025-04-22 16:38:29] INFO: API key authenticated
+[2025-04-22 16:38:29] INFO: Sending sri message to 127.0.0.1:2905
+[2025-04-22 16:38:29] INFO: [MAP] Packet (hex): 0201020201043011800821436587092143F581058967452301
+[2025-04-22 16:38:29] INFO: Successfully connected to 127.0.0.1:2905
+[2025-04-22 16:38:29] INFO: SCTP connection to 127.0.0.1:2905 closed
+[2025-04-22 16:38:29] INFO: [MAP] Response (hex): 0202020201043011800821436587092143F581058967452301
+[2025-04-22 16:39:24] INFO: API key authenticated
+[2025-04-22 16:41:08] INFO: API key authenticated
+[2025-04-22 16:41:33] INFO: [MAP] Packet (hex): 0201020201043011800821436587092143F581058967452301
+[2025-04-22 16:41:33] INFO: Successfully connected to 127.0.0.1:2905
+[2025-04-22 16:41:33] INFO: SCTP connection to 127.0.0.1:2905 closed
+[2025-04-22 16:41:33] INFO: [MAP] Response (hex): 0202020201043011800821436587092143F581058967452301
+[2025-04-22 16:55:52] INFO: API key authenticated
+[2025-04-22 16:56:03] ERROR: Unhandled exception
+Traceback (most recent call last):
+  File "/usr/lib/python3.10/cmd.py", line 214, in onecmd
+    func = getattr(self, 'do_' + cmd)
+AttributeError: 'UI' object has no attribute 'do_sri'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/telcopt/ss7-security-tool/main.py", line 106, in main
+    ui.run_interactive_mode()
+  File "/home/telcopt/ss7-security-tool/cli/ui.py", line 89, in run_interactive_mode
+    self.cmdloop()
+  File "/usr/lib/python3.10/cmd.py", line 138, in cmdloop
+    stop = self.onecmd(line)
+  File "/usr/lib/python3.10/cmd.py", line 216, in onecmd
+    return self.default(line)
+  File "/home/telcopt/ss7-security-tool/cli/ui.py", line 41, in default
+    args = self.command_handler.parse_interactive_args(line)
+AttributeError: 'CommandHandler' object has no attribute 'parse_interactive_args'
+[2025-04-22 16:58:21] INFO: API key authenticated
+[2025-04-22 16:58:21] INFO: Sending sri message to 127.0.0.1:2905
+[2025-04-22 16:58:21] INFO: [MAP] Packet (hex): 0201020201043011800821436587092143F581058967452301
+[2025-04-22 16:58:21] INFO: Successfully connected to 127.0.0.1:2905
+[2025-04-22 16:58:21] INFO: SCTP connection to 127.0.0.1:2905 closed
+[2025-04-22 16:58:21] INFO: [MAP] Response (hex): 0202020201043011800821436587092143F581058967452301
+[2025-04-22 16:58:21] INFO: Parsed response: {'status': 'success', 'invoke_id': 2, 'opcode': 4, 'params': {}}
+[2025-04-22 16:58:47] INFO: API key authenticated
+[2025-04-22 16:59:02] INFO: [MAP] Packet (hex): 0201020201043011800821436587092143F581058967452301
+[2025-04-22 16:59:02] INFO: Successfully connected to 127.0.0.1:2905
+[2025-04-22 16:59:02] INFO: SCTP connection to 127.0.0.1:2905 closed
+[2025-04-22 16:59:02] INFO: [MAP] Response (hex): 0202020201043011800821436587092143F581058967452301
+[2025-04-22 16:59:02] INFO: Parsed response: {'status': 'success', 'invoke_id': 2, 'opcode': 4, 'params': {}}
+[2025-04-29 16:56:09] INFO: API key authenticated
+[2025-04-29 16:56:09] INFO: Sending sri message to 127.0.0.1:2905
+[2025-04-29 16:56:09] ERROR: Error during operation: module 'sctp' has no attribute 'SCTPError'
+[2025-04-29 16:56:21] INFO: API key authenticated
+[2025-04-30 17:03:28] INFO: Sending sri message to 127.0.0.1:2905
+[2025-04-30 17:03:28] INFO: [MAP] Packet (hex): 02010202010430138011800821436587092143F581058967452301
+[2025-04-30 17:03:28] INFO: Successfully connected to 127.0.0.1:2905
+[2025-04-30 17:03:28] INFO: [MAP] Response (hex): 0202020201043011800821436587092143F581058967452301
+[2025-04-30 17:03:28] INFO: SCTP connection to 127.0.0.1:2905 closed
+[2025-04-30 17:03:28] INFO: Parsed response: {'status': 'success', 'opcode': 4, 'params': {'imsi': '0880123456789012', 'msisdn': '345185098'}}
+[2025-04-30 17:03:28] ERROR: Error during operation: type object 'ResponseParser' has no attribute 'format_response'
+[2025-04-30 17:04:10] WARNING: Field default_imsi not encrypted, using as-is
+[2025-04-30 17:04:10] WARNING: Field default_msisdn not encrypted, using as-is
+[2025-04-30 17:04:10] WARNING: Field default_gt not encrypted, using as-is
+[2025-04-30 17:04:10] INFO: Configuration loaded from configs/default_config.yml
+[2025-04-30 17:04:10] WARNING: Field default_imsi not encrypted, using as-is
+[2025-04-30 17:04:10] WARNING: Field default_msisdn not encrypted, using as-is
+[2025-04-30 17:04:10] WARNING: Field default_gt not encrypted, using as-is
+[2025-04-30 17:04:10] INFO: Configuration loaded from configs/default_config.yml
+[2025-04-30 17:04:10] INFO: Configuration saved to configs/test_config.yml
+[2025-04-30 17:04:10] WARNING: Field default_imsi not encrypted, using as-is
+[2025-04-30 17:04:10] WARNING: Field default_msisdn not encrypted, using as-is
+[2025-04-30 17:04:10] WARNING: Field default_gt not encrypted, using as-is
+[2025-04-30 17:04:10] INFO: Configuration loaded from configs/default_config.yml
+[2025-04-30 17:04:10] INFO: Configuration loaded from configs/test_config.yml
+[2025-04-30 17:05:15] INFO: [2025-04-30 17:05:15.353245] INFO: API key authenticated
+[2025-04-30 17:05:46] INFO: [2025-04-30 17:05:46.362497] INFO: Sending sri message to 127.0.0.1:2905
+[2025-04-30 17:05:46] INFO: [MAP] Packet (hex): 02010202010430138011800821436587092143F581058967452301
+[2025-04-30 17:05:46] INFO: Successfully connected to 127.0.0.1:2905
+[2025-04-30 17:05:46] INFO: [MAP] Response (hex): 0202020201043011800821436587092143F581058967452301
+[2025-04-30 17:05:46] INFO: SCTP connection to 127.0.0.1:2905 closed
+[2025-04-30 17:05:46] INFO: Parsed response: {'status': 'success', 'opcode': 4, 'params': {'imsi': '0880123456789012', 'msisdn': '345185098'}}
+[2025-05-01 12:01:45] INFO: Sending sri message to 127.0.0.1:2905
+[2025-05-01 12:01:45] INFO: [MAP] Packet (hex): 02010202010430138011800821436587092143F581058967452301
+[2025-05-01 12:01:45] INFO: Successfully connected to 127.0.0.1:2905
+[2025-05-01 12:01:45] INFO: [MAP] Response (hex): 0202020201043011800821436587092143F581058967452301
+[2025-05-01 12:01:45] INFO: SCTP connection to 127.0.0.1:2905 closed
+[2025-05-01 12:01:45] INFO: Parsed response: {'status': 'success', 'invoke_id': 2, 'opcode': 4, 'params': {'imsi': '123456789012345', 'msisdn': '9876543210'}}
+[2025-05-01 12:01:45] INFO: Configuration loaded from configs/default_config.yml
+[2025-05-01 12:01:45] INFO: Configuration loaded from configs/default_config.yml
+[2025-05-01 12:01:45] INFO: Configuration saved to configs/test_config.yml
+[2025-05-01 12:01:45] INFO: Configuration loaded from configs/default_config.yml
+[2025-05-01 12:01:45] INFO: Configuration loaded from configs/test_config.yml
+[2025-05-01 12:01:45] INFO: Sending sri message to 127.0.0.1:2905
+[2025-05-01 12:01:45] INFO: [MAP] Packet (hex): 02010202010430138011800821436587092143F581058967452301
+[2025-05-01 12:01:45] ERROR: Unexpected error connecting to 127.0.0.1:2905: [Errno 111] Connection refused
+[2025-05-01 12:01:45] ERROR: Unexpected error during send/receive: [Errno 111] Connection refused
+[2025-05-01 12:01:45] INFO: TCP connection to 127.0.0.1:2905 closed
+[2025-05-01 12:01:45] ERROR: Error during operation: [Errno 111] Connection refused
+[2025-05-01 12:01:45] ERROR: Error during operation: [Errno 111] Connection refused
+[2025-05-01 12:03:51] INFO: [2025-05-01 12:03:51.511814] INFO: API key authenticated
+[2025-05-01 12:05:11] INFO: Sending sri message to 127.0.0.1:2905
+[2025-05-01 12:05:11] INFO: [MAP] Packet (hex): 02010202010430138011800821436587092143F581058967452301
+[2025-05-01 12:05:11] INFO: Successfully connected to 127.0.0.1:2905
+[2025-05-01 12:05:11] INFO: [MAP] Response (hex): 0202020201043011800821436587092143F581058967452301
+[2025-05-01 12:05:11] INFO: SCTP connection to 127.0.0.1:2905 closed
+[2025-05-01 12:05:11] INFO: Parsed response: {'status': 'success', 'invoke_id': 2, 'opcode': 4, 'params': {'imsi': '123456789012345', 'msisdn': '9876543210'}}
+[2025-05-01 12:05:11] INFO: Configuration loaded from configs/default_config.yml
+[2025-05-01 12:05:12] INFO: Configuration loaded from configs/default_config.yml
+[2025-05-01 12:05:12] INFO: Configuration saved to configs/test_config.yml
+[2025-05-01 12:05:12] INFO: Configuration loaded from configs/default_config.yml
+[2025-05-01 12:05:12] INFO: Configuration loaded from configs/test_config.yml
+[2025-05-01 12:05:12] INFO: Sending sri message to 127.0.0.1:2905
+[2025-05-01 12:05:12] INFO: [MAP] Packet (hex): 02010202010430138011800821436587092143F581058967452301
+[2025-05-01 12:05:12] ERROR: Unexpected error connecting to 127.0.0.1:2905: [Errno 111] Connection refused
+[2025-05-01 12:05:12] ERROR: Unexpected error during send/receive: [Errno 111] Connection refused
+[2025-05-01 12:05:12] INFO: TCP connection to 127.0.0.1:2905 closed
+[2025-05-01 12:05:12] ERROR: Error during operation: [Errno 111] Connection refused
+[2025-05-01 12:05:12] ERROR: Error during operation: [Errno 111] Connection refused
+[2025-05-01 12:05:33] INFO: [2025-05-01 12:05:33.796828] INFO: API key authenticated
+[2025-05-01 12:54:18] INFO: Sending sri message to 127.0.0.1:2905
+[2025-05-01 12:54:18] INFO: [MAP] Packet (hex): 020102020104301380118008123456789012345F81059876543210
+[2025-05-01 12:54:18] INFO: Successfully connected to 127.0.0.1:2905
+[2025-05-01 12:54:18] INFO: [MAP] Response (hex): 0202020201043011800821436587092143F581058967452301
+[2025-05-01 12:54:18] INFO: SCTP connection to 127.0.0.1:2905 closed
+[2025-05-01 12:54:18] INFO: Parsed response: {'status': 'success', 'invoke_id': 2, 'opcode': 4, 'params': {'imsi': '214365870921435', 'msisdn': '8967452301'}}
+[2025-05-01 12:54:18] INFO: Sending sri message to 127.0.0.1:2906
+[2025-05-01 12:54:18] INFO: [MAP] Packet (hex): 020102020104301380118008123456789012345F81059876543210
+[2025-05-01 12:54:18] INFO: Successfully connected to 127.0.0.1:2906
+[2025-05-01 12:54:18] INFO: [MAP] Response (hex): 0202020201043011800821436587092143F581058967452301
+[2025-05-01 12:54:18] INFO: TCP connection to 127.0.0.1:2906 closed
+[2025-05-01 12:54:18] INFO: Parsed response: {'status': 'success', 'invoke_id': 2, 'opcode': 4, 'params': {'imsi': '214365870921435', 'msisdn': '8967452301'}}
+[2025-05-01 12:54:19] INFO: Configuration loaded from configs/default_config.yml
+[2025-05-01 12:54:19] INFO: Configuration loaded from configs/default_config.yml
+[2025-05-01 12:54:19] INFO: Configuration saved to configs/test_config.yml
+[2025-05-01 12:54:19] INFO: Configuration loaded from configs/default_config.yml
+[2025-05-01 12:54:19] INFO: Configuration loaded from configs/test_config.yml
+[2025-05-01 12:54:43] INFO: [2025-05-01 12:54:43.680033] INFO: API key authenticated
+[2025-05-01 13:02:18] INFO: Sending sri message to 127.0.0.1:2905
+[2025-05-01 13:02:18] INFO: [MAP] Packet (hex): 020102020104301380118008123456789012345F81059876543210
+[2025-05-01 13:02:18] INFO: Successfully connected to 127.0.0.1:2905
+[2025-05-01 13:02:18] INFO: [MAP] Response (hex): 0202020201043011800821436587092143F581058967452301
+[2025-05-01 13:02:18] INFO: SCTP connection to 127.0.0.1:2905 closed
+[2025-05-01 13:02:18] INFO: Parsed response: {'status': 'success', 'invoke_id': 2, 'opcode': 4, 'params': {'imsi': '214365870921435', 'msisdn': '8967452301'}}
+[2025-05-01 13:02:18] INFO: Sending sri message to 127.0.0.1:2906
+[2025-05-01 13:02:18] INFO: [MAP] Packet (hex): 020102020104301380118008123456789012345F81059876543210
+[2025-05-01 13:02:18] INFO: Successfully connected to 127.0.0.1:2906
+[2025-05-01 13:02:18] INFO: [MAP] Response (hex): 0202020201043011800821436587092143F581058967452301
+[2025-05-01 13:02:18] INFO: TCP connection to 127.0.0.1:2906 closed
+[2025-05-01 13:02:18] INFO: Parsed response: {'status': 'success', 'invoke_id': 2, 'opcode': 4, 'params': {'imsi': '214365870921435', 'msisdn': '8967452301'}}
+[2025-05-01 13:02:18] INFO: Configuration loaded from configs/default_config.yml
+[2025-05-01 13:02:18] INFO: Configuration loaded from configs/default_config.yml
+[2025-05-01 13:02:18] INFO: Configuration saved to configs/test_config.yml
+[2025-05-01 13:02:18] INFO: Configuration loaded from configs/default_config.yml
+[2025-05-01 13:02:18] INFO: Configuration loaded from configs/test_config.yml
+[2025-05-01 13:02:44] INFO: [2025-05-01 13:02:44.641573] INFO: API key authenticated
+[2025-05-01 15:05:09] INFO: Sending sri message to 127.0.0.1:2905
+[2025-05-01 15:05:09] INFO: [MAP] Packet (hex): 02010202010430138011800821436587092143F581058967452301
+[2025-05-01 15:05:09] INFO: Successfully connected to 127.0.0.1:2905
+[2025-05-01 15:05:09] INFO: [MAP] Response (hex): 0202020201043011800821436587092143F581058967452301
+[2025-05-01 15:05:09] INFO: SCTP connection to 127.0.0.1:2905 closed
+[2025-05-01 15:05:09] INFO: Parsed response: {'status': 'success', 'invoke_id': 2, 'opcode': 4, 'params': {'imsi': '214365870921435', 'msisdn': '8967452301'}}
+[2025-05-01 15:05:09] INFO: Sending sri message to 127.0.0.1:2906
+[2025-05-01 15:05:09] INFO: [MAP] Packet (hex): 02010202010430138011800821436587092143F581058967452301
+[2025-05-01 15:05:09] INFO: Successfully connected to 127.0.0.1:2906
+[2025-05-01 15:05:09] INFO: [MAP] Response (hex): 0202020201043011800821436587092143F581058967452301
+[2025-05-01 15:05:09] INFO: TCP connection to 127.0.0.1:2906 closed
+[2025-05-01 15:05:09] INFO: Parsed response: {'status': 'success', 'invoke_id': 2, 'opcode': 4, 'params': {'imsi': '214365870921435', 'msisdn': '8967452301'}}
+[2025-05-01 15:05:09] INFO: Configuration loaded from configs/default_config.yml
+[2025-05-01 15:55:31] INFO: Sending sri message to 127.0.0.1:2905
+[2025-05-01 15:55:31] INFO: [MAP] Packet (hex): 02010202010430138011800821436587092143F581058967452301
+[2025-05-01 15:55:31] INFO: Successfully connected to 127.0.0.1:2905
+[2025-05-01 15:55:31] INFO: [MAP] Response (hex): 0202020201043011800821436587092143F581058967452301
+[2025-05-01 15:55:31] INFO: SCTP connection to 127.0.0.1:2905 closed
+[2025-05-01 15:55:31] INFO: Parsed response: {'status': 'success', 'invoke_id': 2, 'opcode': 4, 'params': {'imsi': '214365870921435', 'msisdn': '8967452301'}}
+[2025-05-01 15:55:32] INFO: Sending sri message to 127.0.0.1:2906
+[2025-05-01 15:55:32] INFO: [MAP] Packet (hex): 02010202010430138011800821436587092143F581058967452301
+[2025-05-01 15:55:32] INFO: Successfully connected to 127.0.0.1:2906
+[2025-05-01 15:55:32] INFO: [MAP] Response (hex): 0202020201043011800821436587092143F581058967452301
+[2025-05-01 15:55:32] INFO: TCP connection to 127.0.0.1:2906 closed
+[2025-05-01 15:55:32] INFO: Parsed response: {'status': 'success', 'invoke_id': 2, 'opcode': 4, 'params': {'imsi': '214365870921435', 'msisdn': '8967452301'}}
+[2025-05-01 15:55:32] INFO: Configuration loaded from configs/default_config.yml
+[2025-05-01 15:55:55] INFO: [2025-05-01 15:55:55.811992] INFO: API key authenticated
+[2025-05-01 16:02:01] INFO: Sending sri message to 127.0.0.1:2906
+[2025-05-01 16:02:01] INFO: [MAP] Packet (hex): 02010202010430138011800821436587092143F581058967452301
+[2025-05-01 16:02:01] INFO: Successfully connected to 127.0.0.1:2906
+[2025-05-01 16:02:01] INFO: [MAP] Response (hex): 0202020201043011800821436587092143F581058967452301
+[2025-05-01 16:02:01] INFO: TCP connection to 127.0.0.1:2906 closed
+[2025-05-01 16:02:01] INFO: Parsed response: {'status': 'success', 'invoke_id': 2, 'opcode': 4, 'params': {'imsi': '123456789012345', 'msisdn': '9876543210'}}
+[2025-05-01 16:02:13] INFO: Sending sri message to 127.0.0.1:2905
+[2025-05-01 16:02:13] INFO: [MAP] Packet (hex): 02010202010430138011800821436587092143F581058967452301
+[2025-05-01 16:02:13] INFO: Successfully connected to 127.0.0.1:2905
+[2025-05-01 16:02:13] INFO: [MAP] Response (hex): 0202020201043011800821436587092143F581058967452301
+[2025-05-01 16:02:13] INFO: SCTP connection to 127.0.0.1:2905 closed
+[2025-05-01 16:02:13] INFO: Parsed response: {'status': 'success', 'invoke_id': 2, 'opcode': 4, 'params': {'imsi': '123456789012345', 'msisdn': '9876543210'}}
+[2025-05-01 16:02:13] INFO: Sending sri message to 127.0.0.1:2906
+[2025-05-01 16:02:13] INFO: [MAP] Packet (hex): 02010202010430138011800821436587092143F581058967452301
+[2025-05-01 16:02:13] INFO: Successfully connected to 127.0.0.1:2906
+[2025-05-01 16:02:13] INFO: [MAP] Response (hex): 0202020201043011800821436587092143F581058967452301
+[2025-05-01 16:02:13] INFO: TCP connection to 127.0.0.1:2906 closed
+[2025-05-01 16:02:13] INFO: Parsed response: {'status': 'success', 'invoke_id': 2, 'opcode': 4, 'params': {'imsi': '123456789012345', 'msisdn': '9876543210'}}
+[2025-05-01 16:02:14] INFO: Configuration loaded from configs/default_config.yml
+[2025-05-01 16:02:30] INFO: [2025-05-01 16:02:30.896427] INFO: API key authenticated

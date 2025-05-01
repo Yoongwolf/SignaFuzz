@@ -1,0 +1,13 @@
+logging:
+  log_file: logs/ss7_tool.log
+  log_level: INFO
+network:
+  default_ip: 127.0.0.1
+  default_port: 2905
+  protocol: SCTP
+ss7:
+  country_code: 91
+  default_gt: gAAAAABoEyOCoVIRnJFjOru3jZFzP4EjfmtLkDB47zJkXHpveL_o6MdgZHWVqIylRq-Np6nQ9_QjEOEXG3_zaHrY7Lyzwgsm6Q==
+  default_imsi: gAAAAABoEyOChiS5lBcVfH_Vg9fVlZ2JMTWTvJKSqvr1bj1qTsYCExZJr2AKad9qui6nbjssksmTwoopOZTgbUc3Dk9SZTOJXw==
+  default_msisdn: gAAAAABoEyOCCqDza5LgyHGaqjW-H95MfjZTULcV-SBNB6UdLoRqtExkZHGRSBSSW7ZjEEF-g3LRbX41rLILsLHveVay4gKQXw==
+  ssn: 6

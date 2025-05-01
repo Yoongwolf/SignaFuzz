@@ -1,90 +1,79 @@
-# utils/protocols/ss7_layers.py
-
 from scapy.packet import Packet, bind_layers
-from scapy.fields import (
-    ByteField,
-    IntField,
-    StrLenField,
-    StrFixedLenField,
-    FieldLenField
-)
-from scapy.layers.inet import IP
-from scapy.all import load_contrib
-load_contrib("sctp")
+from scapy.fields import XByteField, FieldLenField, FieldListField, StrLenField
 
-from scapy.contrib.sctp import SCTP, SCTPChunkData
-
-
-# Custom 3-byte field for DPC/OPC in MTP3
-class ThreeBytesField(IntField):
+class ThreeBytesField(StrLenField):
+    """
+    Custom Scapy field for 3-byte values (e.g., OPC, DPC).
+    """
     def __init__(self, name, default):
-        super().__init__(name, default)
-
-    def i2m(self, pkt, val):
-        return val & 0xFFFFFF  # Keep only 3 bytes
-
-    def addfield(self, pkt, s, val):
-        return s + self.i2m(pkt, val).to_bytes(3, "big")
-
-    def getfield(self, pkt, s):
-        return s[3:], int.from_bytes(s[:3], "big")
-
-    def i2repr(self, pkt, x):
-        return hex(x)
-
+        if len(default) != 3:
+            raise ValueError(f"{name} must be exactly 3 bytes, got {len(default)} bytes")
+        StrLenField.__init__(self, name, default)
 
 class MTP3(Packet):
+    """
+    MTP3 layer for SS7 protocol.
+    """
     name = "MTP3"
     fields_desc = [
-        ByteField("SIO", 0x83),  # Network Indicator, Service Indicator, Priority
-        ThreeBytesField("DPC_SPC", 0),  # Destination Point Code + Originating Point Code
-        ByteField("Service_Indicator", 3)  # E.g., 3 = SCCP
+        XByteField("sio", 0x00),  # Service Information Octet
+        ThreeBytesField("opc", b"\x00\x00\x00"),  # Originating Point Code
+        ThreeBytesField("dpc", b"\x00\x00\x00"),  # Destination Point Code
+        XByteField("sls", 0x00),  # Signalling Link Selection
     ]
-
 
 class SCCP(Packet):
+    """
+    SCCP layer for SS7 protocol (UDT message).
+    """
     name = "SCCP"
     fields_desc = [
-        ByteField("message_type", 0x11),
-        ByteField("pointer", 0x0A),
-        FieldLenField("called_length", None, length_of="called_data", fmt="B"),
-        StrLenField("called_data", "", length_from=lambda pkt: pkt.called_length),
-        FieldLenField("calling_length", None, length_of="calling_data", fmt="B"),
-        StrLenField("calling_data", "", length_from=lambda pkt: pkt.calling_length),
-        ByteField("protocol_class", 0x11),
-        ByteField("message_handling", 0x00),
-        FieldLenField("data_length", None, length_of="user_data", fmt="H"),
-        StrLenField("user_data", "", length_from=lambda pkt: pkt.data_length)
+        XByteField("message_type", 0x09),  # UDT
+        XByteField("protocol_class", 0x00),
+        XByteField("pointer_called", 0x03),
+        XByteField("pointer_calling", 0x00),
+        XByteField("pointer_data", 0x00),
+        FieldLenField("called_party_len", None, length_of="called_party", fmt="B"),
+        StrLenField("called_party", b"", length_from=lambda pkt: pkt.called_party_len),
+        FieldLenField("calling_party_len", None, length_of="calling_party", fmt="B"),
+        StrLenField("calling_party", b"", length_from=lambda pkt: pkt.calling_party_len),
+        FieldLenField("data_len", None, length_of="data", fmt="B"),
+        StrLenField("data", b"", length_from=lambda pkt: pkt.data_len),
     ]
 
-
-class TCAP(Packet):
-    name = "TCAP"
-    fields_desc = [
-        ByteField("tag", 0x62),  # Begin dialogue tag
-        FieldLenField("length", None, length_of="data", fmt="B"),
-        StrLenField("data", "", length_from=lambda pkt: pkt.length)
-    ]
-
+    def post_build(self, pkt, pay):
+        """
+        Adjust SCCP pointers after packet construction.
+        """
+        if self.pointer_calling == 0:
+            self.pointer_calling = 3 + self.called_party_len
+        if self.pointer_data == 0:
+            self.pointer_data = 3 + self.called_party_len + self.calling_party_len
+        return Packet.post_build(self, pkt, pay)
 
 class MAP(Packet):
+    """
+    MAP layer for SS7 protocol per 3GPP TS 29.002.
+    """
     name = "MAP"
     fields_desc = [
-        ByteField("invoke_id", 0x02),
-        ByteField("opcode_tag", 0x02),
-        ByteField("opcode_length", 1),
-        ByteField("opcode", 0x04),  # 0x04 = SendRoutingInfo
-        ByteField("param_tag", 0x30),
-        ByteField("param_length", 0x0A),
-        ByteField("imsi_tag", 0x80),
-        ByteField("imsi_length", 0x08),
-        StrFixedLenField("imsi", b"", length=8)  # RAW bytes, not string
+        XByteField("invoke_id_tag", 0x02),  # Invoke ID tag
+        XByteField("invoke_id_length", 0x01),
+        XByteField("invoke_id", 0x02),
+        XByteField("opcode_tag", 0x02),  # Operation code tag
+        XByteField("opcode_length", 0x01),
+        XByteField("opcode", 0x00),  # Operation code (e.g., 0x04 for SendRoutingInfo)
+        XByteField("param_tag", 0x30),  # Parameters sequence tag
+        FieldLenField("param_length", None, length_of="params", fmt="B"),
+        FieldListField(
+            "params",
+            [],
+            StrLenField("", b"", length_from=lambda pkt: pkt.param_length),
+            length_from=lambda pkt: pkt.param_length
+        ),
     ]
 
-
-
-# Layer bindings
-bind_layers(SCTPChunkData, MTP3)
+# Bind layers for SS7 stack
+bind_layers(SCCP, MAP, data_len=lambda x: x > 0)
 bind_layers(MTP3, SCCP)
-bind_layers(SCCP, TCAP)
-bind_layers(TCAP, MAP)
+# Note: SCTP binding requires custom handling in sctp_client.py due to Scapy limitations

@@ -1,5 +1,4 @@
-# cli/command_handler.py
-
+#cli/command_handler.py
 import argparse
 import logging
 from typing import Dict, Any, List
@@ -43,6 +42,10 @@ class CommandHandler:
         ul_parser = subparsers.add_parser("ul", help="Update Location operation")
         self._add_common_args(ul_parser)
         ul_parser.add_argument("--vlr", required=True, help="VLR number")
+        
+        # ProvideSubscriberInfo command
+        psi_parser = subparsers.add_parser("psi", help="Provide Subscriber Info operation")
+        self._add_common_args(psi_parser)
         
         # Interactive mode
         interactive_parser = subparsers.add_parser("interactive", help="Run in interactive mode")

@@ -1,0 +1,15 @@
+```mermaid
+graph TD
+    A[User Input<br>CLI/Interactive] -->|Parse Args| B[CommandHandler]
+    B -->|Config| C[ConfigManager]
+    C -->|Load/Decrypt| D[Config Data]
+    B -->|Validated Input| E[Ss7Tool]
+    E -->|Create Packet| F[MessageFactory]
+    F -->|MAP Packet| G[SCTPClient]
+    G -->|Send SCTP| H[SS7 Network<br>192.168.1.1:2905]
+    H -->|Response| G
+    G -->|Receive| E
+    E -->|Parse Response| I[ResponseParser]
+    I -->|Formatted Output| J[Console]
+    J -->|Log| K[logs/ss7_tool.log]
+```

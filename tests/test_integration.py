@@ -1,3 +1,4 @@
+#test/test_Integration.py
 import unittest
 import subprocess
 import time
@@ -13,7 +14,7 @@ class TestIntegration(unittest.TestCase):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE
         )
-        time.sleep(1)  # Wait for server to start
+        time.sleep(3)  # Increased delay for server startup
 
     @classmethod
     def tearDownClass(cls):
@@ -33,13 +34,17 @@ class TestIntegration(unittest.TestCase):
             "gt": "1234567890"
         }
         tool = Ss7Tool(config)
-        tool.send_message("sri")
-        self.assertIsNotNone(tool.response)
-        parsed_response = ResponseParser.parse_response(tool.response)
-        self.assertEqual(parsed_response["status"], "success")
-        self.assertEqual(parsed_response["opcode"], 0x04)
-        self.assertEqual(parsed_response["params"]["imsi"], "123456789012345")
-        self.assertEqual(parsed_response["params"]["msisdn"], "9876543210")
+        for _ in range(3):  # Retry up to 3 times
+            tool.send_message("sri")
+            if tool.response:
+                parsed_response = ResponseParser.parse_response(tool.response)
+                self.assertEqual(parsed_response["status"], "success")
+                self.assertEqual(parsed_response["opcode"], 0x04)
+                self.assertEqual(parsed_response["params"]["imsi"], "123456789012345")
+                self.assertEqual(parsed_response["params"]["msisdn"], "9876543210")
+                return
+            time.sleep(1)  # Wait before retry
+        self.fail("No response received from server after retries")
 
 if __name__ == "__main__":
     unittest.main()

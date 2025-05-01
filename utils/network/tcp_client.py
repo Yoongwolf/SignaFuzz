@@ -1,16 +1,15 @@
-# utils/network/sctp_client.py
+# utils/network/tcp_client.py
 import logging
 import socket
-import sctp
 from typing import Optional
 
-class SCTPClient:
+class TCPClient:
     """
-    SCTP client for SS7 communication.
+    TCP client for SS7 communication (fallback for testing).
     """
-    def __init__(self, host: str, port: int, timeout: float = 10.0):
+    def __init__(self, host: str, port: int, timeout: float = 5.0):
         """
-        Initialize SCTP client.
+        Initialize TCP client.
 
         Args:
             host: Target host IP
@@ -20,7 +19,7 @@ class SCTPClient:
         self.host = host
         self.port = port
         self.timeout = timeout
-        self.sock: Optional[sctp.sctpsocket_tcp] = None
+        self.sock: Optional[socket.socket] = None
 
     def connect(self) -> None:
         """
@@ -32,8 +31,8 @@ class SCTPClient:
             Exception: For other connection errors
         """
         try:
-            logging.debug(f"Attempting SCTP connection to {self.host}:{self.port}")
-            self.sock = sctp.sctpsocket_tcp(socket.AF_INET)
+            logging.debug(f"Attempting TCP connection to {self.host}:{self.port}")
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.sock.settimeout(self.timeout)
             self.sock.connect((self.host, self.port))
             logging.info(f"Successfully connected to {self.host}:{self.port}")
@@ -65,14 +64,9 @@ class SCTPClient:
             if not self.sock:
                 self.connect()
             logging.debug(f"Sending data: {data.hex().upper()}")
-            self.sock.send(data)
-            self.sock.settimeout(self.timeout)
-            response = b""
-            try:
-                response = self.sock.recv(4096)
-                logging.debug(f"Received response: {response.hex().upper()}")
-            except socket.timeout:
-                logging.warning(f"No response received within {self.timeout}s")
+            self.sock.sendall(data)
+            response = self.sock.recv(4096)
+            logging.debug(f"Received response: {response.hex().upper()}")
             return response
         except socket.timeout:
             logging.error(f"Send/receive timeout for {self.host}:{self.port} after {self.timeout}s")
@@ -83,12 +77,12 @@ class SCTPClient:
 
     def close(self) -> None:
         """
-        Close the SCTP connection.
+        Close the TCP connection.
         """
         if self.sock:
             try:
                 self.sock.close()
-                logging.info(f"SCTP connection to {self.host}:{self.port} closed")
+                logging.info(f"TCP connection to {self.host}:{self.port} closed")
             except Exception as e:
                 logging.error(f"Error closing connection: {e}")
             finally:

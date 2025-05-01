@@ -31,6 +31,8 @@ setup(
         "pysctp>=0.7.2",
         "pyyaml>=6.0",
         "colorama>=0.4.4",
+        "pytest>=7.0.0",
+        "cryptography>=42.0.0",
     ],
     classifiers=[
         "Development Status :: 3 - Alpha",

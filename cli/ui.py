@@ -1,324 +1,283 @@
-import sys
+#cli/ui.py
 import logging
-import shlex
-from typing import Dict, Any, Optional, List
+import cmd
+import argparse
+from datetime import datetime
+from typing import Optional
+from colorama import init, Fore
 from app.core import Ss7Tool
 from app.response_parser import ResponseParser
-from utils.validators import validate_imsi, validate_msisdn, validate_gt, validate_ip, validate_port
+from utils.validators import validate_imsi, validate_msisdn, validate_ip, validate_port, validate_gt, validate_ssn
 
-class UI:
+init(autoreset=True)
+
+def print_colored(message: str, color: str = Fore.WHITE) -> None:
     """
-    User interface handler for interactive mode.
+    Print a colored message to the console.
     """
-    
-    BANNER = """
+    print(f"{color}{message}")
+
+def print_success(message: str) -> None:
+    """
+    Print a success message in green.
+    """
+    print_colored(f"✅ {message}", Fore.GREEN)
+
+def print_error(message: str) -> None:
+    """
+    Print an error message in red.
+    """
+    print_colored(f"❌ Error: {message}", Fore.RED)
+
+class CommandHandler(cmd.Cmd):
+    """
+    Interactive CLI for SS7 Security Research Tool.
+    """
+    prompt = "SS7> "
+    intro = """
   ___ ___ _____   ___ ___ ___ _   _ ___ ___ _____   _____ ___   ___  _    
- / __/ __|___  | / __| __/ __| | | | _ \_ _| __\ \ / /_  / _ \ / _ \| |   
- \__ \__ \  / /  \__ \ _| (__| |_| |   /| || _| \ V / / / (_) | (_) | |__ 
- |___/___/ /_/   |___/___\___|\___/|_|_\___|___| \_/ /___\___/ \___/|____|
+ / __/ __|___  | / __| __/ __| | | | _ \\_ _| __\\ \\ / /_  / _ \\ / _ \\| |   
+ \\__ \\__ \\  / /  \\__ \\ _| (__| |_| |   /| || _| \\ V / / / (_) | (_) | |__ 
+ |___/___/ /_/   |___/___\\___|\\___/|_|_\\___|___| \\_/ /___\\___/ \\___/|____|
                                                                           
     Security Research Tool - v0.2.0
+    
+Type 'help' for available commands or 'exit' to quit.
     """
-    
+
     def __init__(self):
+        super().__init__()
+        self.api_key: Optional[str] = None
+        self.tool: Optional[Ss7Tool] = None
+
+    def preloop(self) -> None:
         """
-        Initialize user interface.
+        Authenticate API key before starting the command loop.
         """
-        self.operation_handlers = {
-            "sri": self._handle_sri,
-            "ati": self._handle_ati,
-            "ul": self._handle_ul,
-            "psi": self._handle_psi,
-            "help": self._handle_help,
-            "exit": self._handle_exit
-        }
-    
-    def show_banner(self) -> None:
-        """
-        Display application banner.
-        """
-        print(self.BANNER)
-        print("Type 'help' for available commands or 'exit' to quit.")
-        print()
-    
-    def print_colored(self, text: str, color_code: int) -> None:
-        """
-        Print colored text.
-        
-        Args:
-            text: Text to print
-            color_code: ANSI color code
-        """
-        print(f"\033[{color_code}m{text}\033[0m")
-        
-    def print_success(self, text: str) -> None:
-        """
-        Print success message.
-        
-        Args:
-            text: Success message
-        """
-        self.print_colored(text, 32)  # Green
-        
-    def print_error(self, text: str) -> None:
-        """
-        Print error message.
-        
-        Args:
-            text: Error message
-        """
-        self.print_colored(text, 31)  # Red
-        
-    def print_info(self, text: str) -> None:
-        """
-        Print info message.
-        
-        Args:
-            text: Info message
-        """
-        self.print_colored(text, 36)  # Cyan
-    
-    def get_input(self, prompt: str, default: Optional[str] = None) -> str:
-        """
-        Get user input with prompt.
-        
-        Args:
-            prompt: Input prompt
-            default: Default value (optional)
-            
-        Returns:
-            User input or default value
-        """
-        prompt_text = f"{prompt}: " if default is None else f"{prompt} [{default}]: "
-        value = input(prompt_text).strip()
-        return value if value else default if default is not None else ""
-    
-    def run_interactive_mode(self) -> None:
-        """
-        Run interactive command loop.
-        """
-        self.show_banner()
-        
-        while True:
-            try:
-                command_line = input("\033[1m\033[34mSS7> \033[0m").strip()
-                if not command_line:
-                    continue
-                
-                if command_line.strip().startswith("python main.py"):
-                    self.print_error("Error: CLI commands cannot be run in interactive mode.")
-                    self.print_info("Use the command directly, e.g.:")
-                    self.print_info("  sri --imsi 123456789012345 --msisdn 9876543210 --target-ip 127.0.0.1 --target-port 2905 --ssn 6 --gt 1234567890")
-                    self._handle_help([])
-                    continue
-                    
-                parts = shlex.split(command_line)
-                command = parts[0].lower()
-                args = parts[1:] if len(parts) > 1 else []
-                
-                if command in self.operation_handlers:
-                    self.operation_handlers[command](args)
+        try:
+            while not self.api_key:
+                key = input("Enter API key: ").strip()
+                if key == "test_key_123":  # Replace with actual authentication
+                    self.api_key = key
+                    logging.info(f"[{datetime.now()}] INFO: API key authenticated")
                 else:
-                    self.print_error(f"Unknown command: {command}")
-                    self._handle_help([])
-                    
-            except KeyboardInterrupt:
-                self.print_info("\nExiting...")
-                break
-            except Exception as e:
-                self.print_error(f"Error: {e}")
-                logging.exception("Error in interactive mode")
-    
-    def _handle_help(self, args: List[str]) -> None:
-        """
-        Handle help command.
-        
-        Args:
-            args: Command arguments (unused)
-        """
-        self.print_info("Available commands:")
-        print("  sri  [--imsi IMSI] --msisdn MSISDN --target-ip IP [--target-port PORT]")
-        print("       [--protocol {SCTP,TCP}] [--ssn SSN] [--gt GT]")
-        print("       Send Routing Info operation")
-        print()
-        print("  ati  [--imsi IMSI] --target-ip IP [--target-port PORT]")
-        print("       [--protocol {SCTP,TCP}] [--ssn SSN] [--gt GT]")
-        print("       Any Time Interrogation operation")
-        print()
-        print("  ul   [--imsi IMSI] --vlr VLR --target-ip IP [--target-port PORT]")
-        print("       [--protocol {SCTP,TCP}] [--ssn SSN] [--gt GT]")
-        print("       Update Location operation")
-        print()
-        print("  psi  [--imsi IMSI] --target-ip IP [--target-port PORT]")
-        print("       [--protocol {SCTP,TCP}] [--ssn SSN] [--gt GT]")
-        print("       Provide Subscriber Info operation")
-        print()
-        print("  help Show this help message")
-        print("  exit Exit the program")
-    
-    def _handle_exit(self, args: List[str]) -> None:
-        """
-        Handle exit command.
-        
-        Args:
-            args: Command arguments (unused)
-        """
-        self.print_info("Goodbye!")
-        sys.exit(0)
-    
-    def _handle_sri(self, args: List[str]) -> None:
-        """
-        Handle SendRoutingInfo command.
-        
-        Args:
-            args: Command arguments
-        """
-        self.print_info("Executing SendRoutingInfo operation...")
-        config = self._parse_args(args, required=["msisdn", "target_ip"])
-        if not config:
-            return
-        try:
-            tool = Ss7Tool(config)
-            tool.send_message("sri")
-            if tool.response:
-                parsed = ResponseParser.parse_response(tool.response)
-                self.print_success(ResponseParser.format_response(parsed))
-            else:
-                self.print_error("No response received")
-        except Exception as e:
-            self.print_error(f"Error: {e}")
-        
-    def _handle_ati(self, args: List[str]) -> None:
-        """
-        Handle AnyTimeInterrogation command.
-        
-        Args:
-            args: Command arguments
-        """
-        self.print_info("Executing AnyTimeInterrogation operation...")
-        config = self._parse_args(args, required=["target_ip"])
-        if not config:
-            return
-        try:
-            tool = Ss7Tool(config)
-            tool.send_message("ati")
-            if tool.response:
-                parsed = ResponseParser.parse_response(tool.response)
-                self.print_success(ResponseParser.format_response(parsed))
-            else:
-                self.print_error("No response received")
-        except Exception as e:
-            self.print_error(f"Error: {e}")
-        
-    def _handle_ul(self, args: List[str]) -> None:
-        """
-        Handle UpdateLocation command.
-        
-        Args:
-            args: Command arguments
-        """
-        self.print_info("Executing UpdateLocation operation...")
-        config = self._parse_args(args, required=["vlr", "target_ip"])
-        if not config:
-            return
-        try:
-            tool = Ss7Tool(config)
-            tool.send_message("ul", vlr_number=config["vlr"])
-            if tool.response:
-                parsed = ResponseParser.parse_response(tool.response)
-                self.print_success(ResponseParser.format_response(parsed))
-            else:
-                self.print_error("No response received")
-        except Exception as e:
-            self.print_error(f"Error: {e}")
-    
-    def _handle_psi(self, args: List[str]) -> None:
-        """
-        Handle ProvideSubscriberInfo command.
-        
-        Args:
-            args: Command arguments
-        """
-        self.print_info("Executing ProvideSubscriberInfo operation...")
-        config = self._parse_args(args, required=["target_ip"])
-        if not config:
-            return
-        try:
-            tool = Ss7Tool(config)
-            tool.send_message("psi")
-            if tool.response:
-                parsed = ResponseParser.parse_response(tool.response)
-                self.print_success(ResponseParser.format_response(parsed))
-            else:
-                self.print_error("No response received")
-        except Exception as e:
-            self.print_error(f"Error: {e}")
-    
-    def _parse_args(self, args: List[str], required: List[str]) -> Optional[Dict[str, Any]]:
-        """
-        Parse command-line arguments for interactive mode.
+                    print_error("Invalid API key")
+        except KeyboardInterrupt:
+            print("\nExiting...")
+            raise SystemExit
 
-        Args:
-            args: List of arguments
-            required: List of required arguments
-
-        Returns:
-            Parsed config dictionary or None if invalid
+    def do_sri(self, arg: str) -> None:
         """
-        config = {
-            "imsi": "123456789012345",  # Default for testing
-            "msisdn": "9876543210",
-            "target_ip": None,
-            "target_port": 2905,
-            "protocol": "SCTP",
-            "ssn": "6",
-            "gt": "1234567890",
-            "vlr": None
+        Send SendRoutingInfo (SRI) message.
+        Usage: sri --imsi <IMSI> --msisdn <MSISDN> --target-ip <IP> --target-port <PORT> --ssn <SSN> --gt <GT>
+        """
+        parser = argparse.ArgumentParser(prog="sri")
+        parser.add_argument("--imsi", required=True, help="IMSI (15 digits)")
+        parser.add_argument("--msisdn", required=True, help="MSISDN (10-15 digits)")
+        parser.add_argument("--target-ip", required=True, help="Target IP address")
+        parser.add_argument("--target-port", type=int, required=True, help="Target port")
+        parser.add_argument("--ssn", type=int, required=True, help="Subsystem Number (0-254)")
+        parser.add_argument("--gt", required=True, help="Global Title (10-15 digits)")
+
+        try:
+            args = parser.parse_args(arg.split())
+            config = {
+                "imsi": args.imsi,
+                "msisdn": args.msisdn,
+                "target_ip": args.target_ip,
+                "target_port": args.target_port,
+                "protocol": "SCTP",
+                "ssn": args.ssn,
+                "gt": args.gt
+            }
+            self.tool = Ss7Tool(config)
+            logging.info(f"[{datetime.now()}] INFO: Sending sri message to {args.target_ip}:{args.target_port}")
+            self.tool.send_message("sri")
+            parsed_response = ResponseParser.parse_response(self.tool.response)
+            print_success(f"Parsed response: {parsed_response}")
+            self.tool.handle_response()
+        except argparse.ArgumentError as e:
+            print_error(f"Argument error: {e}")
+        except ValueError as e:
+            print_error(f"Validation error: {e}")
+        except RuntimeError as e:
+            print_error(f"Runtime error: {e}")
+        except Exception as e:
+            print_error(f"Unexpected error: {e}")
+            logging.error(f"[{datetime.now()}] ERROR: Error during operation: {e}")
+
+    def do_ati(self, arg: str) -> None:
+        """
+        Send AnyTimeInterrogation (ATI) message.
+        Usage: ati --imsi <IMSI> --target-ip <IP> --target-port <PORT> --ssn <SSN> --gt <GT>
+        """
+        parser = argparse.ArgumentParser(prog="ati")
+        parser.add_argument("--imsi", required=True, help="IMSI (15 digits)")
+        parser.add_argument("--target-ip", required=True, help="Target IP address")
+        parser.add_argument("--target-port", type=int, required=True, help="Target port")
+        parser.add_argument("--ssn", type=int, required=True, help="Subsystem Number (0-254)")
+        parser.add_argument("--gt", required=True, help="Global Title (10-15 digits)")
+
+        try:
+            args = parser.parse_args(arg.split())
+            config = {
+                "imsi": args.imsi,
+                "msisdn": None,
+                "target_ip": args.target_ip,
+                "target_port": args.target_port,
+                "protocol": "SCTP",
+                "ssn": args.ssn,
+                "gt": args.gt
+            }
+            self.tool = Ss7Tool(config)
+            logging.info(f"[{datetime.now()}] INFO: Sending ati message to {args.target_ip}:{args.target_port}")
+            self.tool.send_message("ati")
+            parsed_response = ResponseParser.parse_response(self.tool.response)
+            print_success(f"Parsed response: {parsed_response}")
+            self.tool.handle_response()
+        except argparse.ArgumentError as e:
+            print_error(f"Argument error: {e}")
+        except ValueError as e:
+            print_error(f"Validation error: {e}")
+        except RuntimeError as e:
+            print_error(f"Runtime error: {e}")
+        except Exception as e:
+            print_error(f"Unexpected error: {e}")
+            logging.error(f"[{datetime.now()}] ERROR: Error during operation: {e}")
+
+    def do_ul(self, arg: str) -> None:
+        """
+        Send UpdateLocation (UL) message.
+        Usage: ul --imsi <IMSI> --vlr-number <VLR> --target-ip <IP> --target-port <PORT> --ssn <SSN> --gt <GT>
+        """
+        parser = argparse.ArgumentParser(prog="ul")
+        parser.add_argument("--imsi", required=True, help="IMSI (15 digits)")
+        parser.add_argument("--vlr-number", required=True, help="VLR number")
+        parser.add_argument("--target-ip", required=True, help="Target IP address")
+        parser.add_argument("--target-port", type=int, required=True, help="Target port")
+        parser.add_argument("--ssn", type=int, required=True, help="Subsystem Number (0-254)")
+        parser.add_argument("--gt", required=True, help="Global Title (10-15 digits)")
+
+        try:
+            args = parser.parse_args(arg.split())
+            config = {
+                "imsi": args.imsi,
+                "msisdn": None,
+                "vlr": args.vlr_number,
+                "target_ip": args.target_ip,
+                "target_port": args.target_port,
+                "protocol": "SCTP",
+                "ssn": args.ssn,
+                "gt": args.gt
+            }
+            self.tool = Ss7Tool(config)
+            logging.info(f"[{datetime.now()}] INFO: Sending ul message to {args.target_ip}:{args.target_port}")
+            self.tool.send_message("ul", vlr_number=args.vlr_number)
+            parsed_response = ResponseParser.parse_response(self.tool.response)
+            print_success(f"Parsed response: {parsed_response}")
+            self.tool.handle_response()
+        except argparse.ArgumentError as e:
+            print_error(f"Argument error: {e}")
+        except ValueError as e:
+            print_error(f"Validation error: {e}")
+        except RuntimeError as e:
+            print_error(f"Runtime error: {e}")
+        except Exception as e:
+            print_error(f"Unexpected error: {e}")
+            logging.error(f"[{datetime.now()}] ERROR: Error during operation: {e}")
+
+    def do_psi(self, arg: str) -> None:
+        """
+        Send ProvideSubscriberInfo (PSI) message.
+        Usage: psi --imsi <IMSI> --target-ip <IP> --target-port <PORT> --ssn <SSN> --gt <GT>
+        """
+        parser = argparse.ArgumentParser(prog="psi")
+        parser.add_argument("--imsi", required=True, help="IMSI (15 digits)")
+        parser.add_argument("--target-ip", required=True, help="Target IP address")
+        parser.add_argument("--target-port", type=int, required=True, help="Target port")
+        parser.add_argument("--ssn", type=int, required=True, help="Subsystem Number (0-254)")
+        parser.add_argument("--gt", required=True, help="Global Title (10-15 digits)")
+
+        try:
+            args = parser.parse_args(arg.split())
+            config = {
+                "imsi": args.imsi,
+                "msisdn": None,
+                "target_ip": args.target_ip,
+                "target_port": args.target_port,
+                "protocol": "SCTP",
+                "ssn": args.ssn,
+                "gt": args.gt
+            }
+            self.tool = Ss7Tool(config)
+            logging.info(f"[{datetime.now()}] INFO: Sending psi message to {args.target_ip}:{args.target_port}")
+            self.tool.send_message("psi")
+            parsed_response = ResponseParser.parse_response(self.tool.response)
+            print_success(f"Parsed response: {parsed_response}")
+            self.tool.handle_response()
+        except argparse.ArgumentError as e:
+            print_error(f"Argument error: {e}")
+        except ValueError as e:
+            print_error(f"Validation error: {e}")
+        except RuntimeError as e:
+            print_error(f"Runtime error: {e}")
+        except Exception as e:
+            print_error(f"Unexpected error: {e}")
+            logging.error(f"[{datetime.now()}] ERROR: Error during operation: {e}")
+
+    def do_exit(self, arg: str) -> bool:
+        """
+        Exit the CLI.
+        """
+        print("Exiting...")
+        return True
+
+    def do_help(self, arg: str) -> None:
+        """
+        Show help for commands.
+        """
+        commands = {
+            "sri": "Send SendRoutingInfo message. Usage: sri --imsi <IMSI> --msisdn <MSISDN> --target-ip <IP> --target-port <PORT> --ssn <SSN> --gt <GT>",
+            "ati": "Send AnyTimeInterrogation message. Usage: ati --imsi <IMSI> --target-ip <IP> --target-port <PORT> --ssn <SSN> --gt <GT>",
+            "ul": "Send UpdateLocation message. Usage: ul --imsi <IMSI> --vlr-number <VLR> --target-ip <IP> --target-port <PORT> --ssn <SSN> --gt <GT>",
+            "psi": "Send ProvideSubscriberInfo message. Usage: psi --imsi <IMSI> --target-ip <IP> --target-port <PORT> --ssn <SSN> --gt <GT>",
+            "exit": "Exit the CLI",
+            "help": "Show this help message"
         }
-        i = 0
-        while i < len(args):
-            arg = args[i]
-            if arg in ["--imsi", "--msisdn", "--target-ip", "--target-port", "--protocol", "--ssn", "--gt", "--vlr"]:
-                if i + 1 >= len(args):
-                    self.print_error(f"Missing value for {arg}")
-                    return None
-                key = arg.lstrip("--").replace("-", "_")
-                config[key] = args[i + 1]
-                i += 2
+        if arg:
+            if arg in commands:
+                print(commands[arg])
             else:
-                self.print_error(f"Unknown argument: {arg}")
-                return None
+                print_error(f"Unknown command: {arg}")
+        else:
+            print("Available commands:")
+            for cmd, desc in commands.items():
+                print(f"  {cmd}: {desc}")
 
-        for key in required:
-            if not config[key]:
-                self.print_error(f"Missing required argument: --{key.replace('_', '-')}")
-                return None
+    def default(self, line: str) -> None:
+        """
+        Handle unknown commands.
+        """
+        print_error(f"Unknown command: {line}")
 
-        # Validate inputs
-        if not validate_imsi(config["imsi"]):
-            self.print_error("Invalid IMSI: must be 15 digits")
-            return None
-        if config["msisdn"] and not validate_msisdn(config["msisdn"]):
-            self.print_error("Invalid MSISDN: must be 10-15 digits")
-            return None
-        if not validate_gt(config["gt"]):
-            self.print_error("Invalid Global Title: must be 10-15 digits")
-            return None
-        if not config["ssn"].isdigit() or not (0 <= int(config["ssn"]) <= 254):
-            self.print_error("Invalid SSN: must be integer 0-254")
-            return None
-        if not validate_ip(config["target_ip"]):
-            self.print_error("Invalid Target IP: must be a valid IPv4 address")
-            return None
-        if not validate_port(config["target_port"]):
-            self.print_error("Invalid Target Port: must be integer 1-65535")
-            return None
-        if config["protocol"] not in ["SCTP", "TCP"]:
-            self.print_error("Invalid Protocol: must be SCTP or TCP")
-            return None
+    def emptyline(self) -> None:
+        """
+        Do nothing on empty input.
+        """
+        pass
 
-        return config
+def run_interactive() -> None:
+    """
+    Run the interactive CLI.
+    """
+    try:
+        CommandHandler().cmdloop()
+    except KeyboardInterrupt:
+        print("\nExiting...")
+    except Exception as e:
+        print_error(f"CLI error: {e}")
+        logging.error(f"[{datetime.now()}] ERROR: CLI error: {e}")
 
 if __name__ == "__main__":
-    ui = UI()
-    ui.run_interactive_mode()
+    logging.basicConfig(filename="logs/ss7_tool.log", level=logging.INFO)
+    run_interactive()

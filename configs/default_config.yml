@@ -1,17 +1,14 @@
 # Default configuration for SS7 Security Research Tool
-
 network:
-  default_protocol: "SCTP"
+  default_ip: "127.0.0.1"
   default_port: 2905
-  timeout: 10
-  buffer_size: 4096
-
+  protocol: "SCTP"
 logging:
-  level: "INFO"
-  format: "[%(asctime)s] %(levelname)s: %(message)s"
-  date_format: "%Y-%m-%d %H:%M:%S"
-  file: "logs/ss7_tool.log"
-
-defaults:
-  ssn: "6"
-  country_code: "91"
+  log_file: "logs/ss7_tool.log"
+  log_level: "INFO"
+ss7:
+  ssn: 6
+  country_code: 91
+  default_imsi: "gAAAAABoEgqys7UP69eWs6XIxsLY9BJtVF9tRTUsZzY9fBwzzLTDbbatRo-pFvmeKg89S2W8qt8PiGnaZnqT02HjHN-9e6PAwQ=="
+  default_msisdn: "gAAAAABoEgqy_7IdG9kuXx6xwtfeUvuj4iaOXABalM_PIaHC5nN90YJNxvG97Om0Qme_BrqinuLUOd6OATqAvXXjlbB1HArGWw=="
+  default_gt: "gAAAAABoEgqy0HjWgM3gwQDK0t9CahVWr-DGMExZ3auRu52-pgCNyN37BuQAE0f0ynjUFO-yohWXNztXcNJcVIKTdUOnSqhXSA=="
