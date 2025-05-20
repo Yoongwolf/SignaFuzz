@@ -20,6 +20,7 @@ class TCPClient:
         self.port = port
         self.timeout = timeout
         self.sock: Optional[socket.socket] = None
+        self.logger = logging.getLogger(__name__)
 
     def connect(self) -> None:
         """
@@ -31,24 +32,24 @@ class TCPClient:
             Exception: For other connection errors
         """
         try:
-            logging.debug(f"Attempting TCP connection to {self.host}:{self.port}")
+            self.logger.debug(f"Attempting TCP connection to {self.host}:{self.port}")
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.sock.settimeout(self.timeout)
             self.sock.connect((self.host, self.port))
-            logging.info(f"Successfully connected to {self.host}:{self.port}")
+            self.logger.info(f"Successfully connected to {self.host}:{self.port}")
         except socket.timeout:
-            logging.error(f"Connection to {self.host}:{self.port} timed out after {self.timeout}s")
+            self.logger.error(f"Connection to {self.host}:{self.port} timed out after {self.timeout}s")
             raise
         except socket.gaierror as e:
-            logging.error(f"Failed to resolve host {self.host}: {e}")
+            self.logger.error(f"Failed to resolve host {self.host}: {e}")
             raise
         except Exception as e:
-            logging.error(f"Unexpected error connecting to {self.host}:{self.port}: {e}")
+            self.logger.error(f"Unexpected error connecting to {self.host}:{self.port}: {e}")
             raise
 
-    def send(self, data: bytes) -> bytes:
+    def send_packet(self, data: bytes) -> bytes:
         """
-        Send data and receive response.
+        Send packet and receive response, handling connection lifecycle.
 
         Args:
             data: Data to send
@@ -61,19 +62,20 @@ class TCPClient:
             Exception: For other send/receive errors
         """
         try:
-            if not self.sock:
-                self.connect()
-            logging.debug(f"Sending data: {data.hex().upper()}")
+            self.connect()
+            self.logger.debug(f"Sending data: {data.hex().upper()}")
             self.sock.sendall(data)
             response = self.sock.recv(4096)
-            logging.debug(f"Received response: {response.hex().upper()}")
+            self.logger.debug(f"Received response: {response.hex().upper()}")
             return response
         except socket.timeout:
-            logging.error(f"Send/receive timeout for {self.host}:{self.port} after {self.timeout}s")
+            self.logger.error(f"Send/receive timeout for {self.host}:{self.port} after {self.timeout}s")
             raise
         except Exception as e:
-            logging.error(f"Unexpected error during send/receive: {e}")
+            self.logger.error(f"Unexpected error during send/receive: {e}")
             raise
+        finally:
+            self.close()
 
     def close(self) -> None:
         """
@@ -82,8 +84,15 @@ class TCPClient:
         if self.sock:
             try:
                 self.sock.close()
-                logging.info(f"TCP connection to {self.host}:{self.port} closed")
+                self.logger.info(f"TCP connection to {self.host}:{self.port} closed")
             except Exception as e:
-                logging.error(f"Error closing connection: {e}")
+                self.logger.error(f"Error closing connection: {e}")
             finally:
                 self.sock = None
+
+    def __enter__(self):
+        self.connect()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()

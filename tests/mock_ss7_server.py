@@ -1,53 +1,105 @@
-import sctp
-import socket
+#mock_ss7_server.py
 import logging
+import socket
+from scapy.all import raw, hexdump
+from utils.protocols.ss7_layers import SCCP_UDT, TCAP_Invoke, TCAP_ReturnResultLast, MAP_SRI, MAP_ATI, MAP_UL, MAP_PSI
 from utils.encoding.bcd import encode_bcd
 
-def run_mock_server(host: str = "127.0.0.1", port: int = 2905):
-    """
-    Run a mock SS7 SCTP server that returns a valid MAP response.
-    """
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s:%(message)s")
-    sock = None
-    try:
-        sock = sctp.sctpsocket_tcp(socket.AF_INET)
-        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        sock.bind((host, port))
-        sock.listen(100)
-        logging.info(f"Mock SS7 server listening on {host}:{port}")
+logging.basicConfig(level=logging.DEBUG, format="%(asctime)s %(levelname)s: %(message)s")
 
+def create_response(request_packet: SCCP_UDT) -> bytes:
+    try:
+        logging.debug(f"Received packet hex: {raw(request_packet).hex()}")
+        if not request_packet.haslayer(TCAP_Invoke):
+            logging.error("No TCAP_Invoke layer in request")
+            hexdump(raw(request_packet))
+            return b""
+        
+        tcap_req = request_packet[TCAP_Invoke]
+        response = SCCP_UDT(
+            msg_type=0x09,
+            protocol_class=0x00,
+            called_party=encode_bcd("2143658709"),
+            calling_party=encode_bcd("2143658709"),
+            called_len=5,
+            calling_len=5
+        )
+        
+        tcap_resp = TCAP_ReturnResultLast(
+            invoke_id=tcap_req.invoke_id,
+            opcode=tcap_req.opcode
+        )
+        
+        if request_packet.haslayer(MAP_SRI):
+            map_sri = request_packet[MAP_SRI]
+            map_resp = MAP_SRI(
+                imsi=map_sri.imsi,
+                msisdn=map_sri.msisdn,
+                imsi_len=len(map_sri.imsi),
+                msisdn_len=len(map_sri.msisdn)
+            )
+        elif request_packet.haslayer(MAP_ATI):
+            map_ati = request_packet[MAP_ATI]
+            map_resp = MAP_ATI(
+                imsi=map_ati.imsi,
+                imsi_len=len(map_ati.imsi)
+            )
+        elif request_packet.haslayer(MAP_UL):
+            map_ul = request_packet[MAP_UL]
+            map_resp = MAP_UL(
+                imsi=map_ul.imsi,
+                vlr_gt=map_ul.vlr_gt,
+                imsi_len=len(map_ul.imsi),
+                vlr_gt_len=len(map_ul.vlr_gt)
+            )
+        elif request_packet.haslayer(MAP_PSI):
+            map_psi = request_packet[MAP_PSI]
+            map_resp = MAP_PSI(
+                imsi=map_psi.imsi,
+                imsi_len=len(map_psi.imsi)
+            )
+        else:
+            logging.error("Unknown MAP layer")
+            return b""
+        
+        response /= tcap_resp / map_resp
+        response.data_len = len(raw(tcap_resp / map_resp))
+        logging.debug(f"Sending response hex: {raw(response).hex()}")
+        return raw(response)
+    except Exception as e:
+        logging.error(f"Response creation error: {e}")
+        return b""
+
+def run_server(host: str = "127.0.0.1", port: int = 2905):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_SCTP)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    sock.bind((host, port))
+    sock.listen(5)
+    logging.info(f"Mock SS7 server listening on {host}:{port}")
+    
+    try:
         while True:
-            client_sock, addr = sock.accept()
+            conn, addr = sock.accept()
+            logging.info(f"Connection from {addr}")
             try:
-                logging.info(f"Connection from {addr}")
-                data = client_sock.recv(4096)
-                if data:
-                    logging.info(f"Received: {data.hex().upper()}")
-                    # Generate response with corrected BCD
-                    imsi = "123456789012345"
-                    msisdn = "9876543210"
-                    encoded_imsi = encode_bcd(imsi)  # 8 bytes
-                    encoded_msisdn = encode_bcd(msisdn)  # 5 bytes
-                    response = (
-                        bytes([0x02, 0x02, 0x02, 0x02, 0x01, 0x04]) +  # Header
-                        bytes([0x30, 0x11, 0x80, 0x08]) + encoded_imsi +  # IMSI
-                        bytes([0x81, 0x05]) + encoded_msisdn  # MSISDN
-                    )
-                    client_sock.send(response)
-                    logging.info(f"Sent response: {response.hex().upper()}")
-                else:
-                    logging.warning("Empty data received")
+                data = conn.recv(1024)
+                if not data:
+                    continue
+                logging.debug(f"Received: {data.hex()}")
+                
+                request_packet = SCCP_UDT(data)
+                response = create_response(request_packet)
+                if response:
+                    conn.send(response)
             except Exception as e:
                 logging.error(f"Client error: {e}")
             finally:
-                client_sock.close()
                 logging.info(f"Connection to {addr} closed")
-    except Exception as e:
-        logging.error(f"Server error: {e}")
+                conn.close()
+    except KeyboardInterrupt:
+        logging.info("Server shutting down")
     finally:
-        if sock:
-            sock.close()
-            logging.info("Mock server socket closed")
+        sock.close()
 
 if __name__ == "__main__":
-    run_mock_server()
+    run_server()

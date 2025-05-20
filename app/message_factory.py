@@ -1,128 +1,93 @@
-from dataclasses import dataclass
-from typing import Optional
+#app/message_factory.py
+from scapy.all import raw
+from utils.protocols.ss7_layers import SCCP_UDT, TCAP_Invoke, MAP_SRI, MAP_ATI, MAP_UL, MAP_PSI, set_map_fields
 from utils.encoding.bcd import encode_bcd
-from utils.validators import validate_imsi, validate_msisdn
-
-@dataclass
-class MAPMessage:
-    invoke_id: int
-    opcode: int
-    params: bytes
 
 class MessageFactory:
     @staticmethod
-    def create_send_routing_info(imsi: str, msisdn: Optional[str] = None) -> MAPMessage:
-        """
-        Create a SendRoutingInfo MAP message.
-
-        Args:
-            imsi: International Mobile Subscriber Identity
-            msisdn: Mobile Station International Subscriber Directory Number (optional)
-
-        Returns:
-            MAPMessage object
-
-        Raises:
-            ValueError: If IMSI or MSISDN is invalid
-        """
-        if not validate_imsi(imsi):
-            raise ValueError("Invalid IMSI: must be 15 digits")
-        if msisdn and not validate_msisdn(msisdn):
-            raise ValueError("Invalid MSISDN: must be 10-15 digits")
-
-        imsi_bytes = encode_bcd(imsi)
-        params = bytes([0x80, len(imsi_bytes)]) + imsi_bytes
-        if msisdn:
-            msisdn_bytes = encode_bcd(msisdn)
-            params += bytes([0x81, len(msisdn_bytes)]) + msisdn_bytes
-
-        return MAPMessage(
-            invoke_id=0x02,
-            opcode=0x04,  # SRI opcode
-            params=params
+    def create_sri_message(imsi: str, msisdn: str, gt: str, ssn: int) -> bytes:
+        map_sri = set_map_fields(MAP_SRI(), imsi=imsi, msisdn=msisdn)
+        tcap = TCAP_Invoke(invoke_id=2, opcode=4)
+        tcap_data = raw(tcap / map_sri)
+        called_party = encode_bcd(gt)
+        calling_party = encode_bcd("2143658709")
+        sccp = SCCP_UDT(
+            msg_type=0x09,
+            protocol_class=0x00,
+            pointer1=3,
+            pointer2=5 + len(called_party),
+            pointer3=7 + len(called_party) + len(calling_party),
+            called_len=len(called_party),
+            calling_len=len(calling_party),
+            data_len=len(tcap_data),
+            called_party=called_party,
+            calling_party=calling_party,
+            data=tcap_data
         )
+        return raw(sccp)
 
     @staticmethod
-    def create_any_time_interrogation(imsi: str) -> MAPMessage:
-        """
-        Create an AnyTimeInterrogation MAP message.
-
-        Args:
-            imsi: International Mobile Subscriber Identity
-
-        Returns:
-            MAPMessage object
-
-        Raises:
-            ValueError: If IMSI is invalid
-        """
-        if not validate_imsi(imsi):
-            raise ValueError("Invalid IMSI: must be 15 digits")
-
-        imsi_bytes = encode_bcd(imsi)
-        params = bytes([0x80, len(imsi_bytes)]) + imsi_bytes
-
-        return MAPMessage(
-            invoke_id=0x02,
-            opcode=0x71,  # ATI opcode
-            params=params
+    def create_ati_message(imsi: str, gt: str, ssn: int) -> bytes:
+        map_ati = set_map_fields(MAP_ATI(), imsi=imsi)
+        tcap = TCAP_Invoke(invoke_id=2, opcode=71)
+        tcap_data = raw(tcap / map_ati)
+        called_party = encode_bcd(gt)
+        calling_party = encode_bcd("2143658709")
+        sccp = SCCP_UDT(
+            msg_type=0x09,
+            protocol_class=0x00,
+            pointer1=3,
+            pointer2=5 + len(called_party),
+            pointer3=7 + len(called_party) + len(calling_party),
+            called_len=len(called_party),
+            calling_len=len(calling_party),
+            data_len=len(tcap_data),
+            called_party=called_party,
+            calling_party=calling_party,
+            data=tcap_data
         )
+        return raw(sccp)
 
     @staticmethod
-    def create_update_location(imsi: str, vlr_number: str) -> MAPMessage:
-        """
-        Create an UpdateLocation MAP message.
-
-        Args:
-            imsi: International Mobile Subscriber Identity
-            vlr_number: Visitor Location Register number
-
-        Returns:
-            MAPMessage object
-
-        Raises:
-            ValueError: If IMSI or VLR number is invalid
-        """
-        if not validate_imsi(imsi):
-            raise ValueError("Invalid IMSI: must be 15 digits")
-        if not validate_msisdn(vlr_number):  # Using MSISDN validator for VLR
-            raise ValueError("Invalid VLR number: must be 10-15 digits")
-
-        imsi_bytes = encode_bcd(imsi)
-        vlr_bytes = encode_bcd(vlr_number)
-        params = (
-            bytes([0x80, len(imsi_bytes)]) + imsi_bytes +
-            bytes([0x81, len(vlr_bytes)]) + vlr_bytes
+    def create_ul_message(imsi: str, vlr_gt: str, gt: str, ssn: int) -> bytes:
+        map_ul = set_map_fields(MAP_UL(), imsi=imsi, vlr_gt=vlr_gt)
+        tcap = TCAP_Invoke(invoke_id=2, opcode=2)
+        tcap_data = raw(tcap / map_ul)
+        called_party = encode_bcd(gt)
+        calling_party = encode_bcd("2143658709")
+        sccp = SCCP_UDT(
+            msg_type=0x09,
+            protocol_class=0x00,
+            pointer1=3,
+            pointer2=5 + len(called_party),
+            pointer3=7 + len(called_party) + len(calling_party),
+            called_len=len(called_party),
+            calling_len=len(calling_party),
+            data_len=len(tcap_data),
+            called_party=called_party,
+            calling_party=calling_party,
+            data=tcap_data
         )
-
-        return MAPMessage(
-            invoke_id=0x02,
-            opcode=0x02,  # UL opcode
-            params=params
-        )
+        return raw(sccp)
 
     @staticmethod
-    def create_provide_subscriber_info(imsi: str) -> MAPMessage:
-        """
-        Create a ProvideSubscriberInfo MAP message.
-
-        Args:
-            imsi: International Mobile Subscriber Identity
-
-        Returns:
-            MAPMessage object
-
-        Raises:
-            ValueError: If IMSI is invalid
-        """
-        if not validate_imsi(imsi):
-            raise ValueError("Invalid IMSI: must be 15 digits")
-
-        imsi_bytes = encode_bcd(imsi)
-        params = bytes([0x80, len(imsi_bytes)]) + imsi_bytes
-
-        return MAPMessage(
-            invoke_id=0x02,
-            opcode=0x70,  # PSI opcode
-            params=params
+    def create_psi_message(imsi: str, gt: str, ssn: int) -> bytes:
+        map_psi = set_map_fields(MAP_PSI(), imsi=imsi)
+        tcap = TCAP_Invoke(invoke_id=2, opcode=59)
+        tcap_data = raw(tcap / map_psi)
+        called_party = encode_bcd(gt)
+        calling_party = encode_bcd("2143658709")
+        sccp = SCCP_UDT(
+            msg_type=0x09,
+            protocol_class=0x00,
+            pointer1=3,
+            pointer2=5 + len(called_party),
+            pointer3=7 + len(called_party) + len(calling_party),
+            called_len=len(called_party),
+            calling_len=len(calling_party),
+            data_len=len(tcap_data),
+            called_party=called_party,
+            calling_party=calling_party,
+            data=tcap_data
         )
+        return raw(sccp)

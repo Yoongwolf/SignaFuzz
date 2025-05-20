@@ -1,96 +1,130 @@
 #app/respons_parser.py
+import sqlite3
 import logging
-from typing import Dict, Any
+from datetime import datetime
+from utils.protocols.ss7_layers import SCCP_UDT, TCAP_ReturnResultLast, MAP_SRI, MAP_ATI, MAP_UL, MAP_PSI
 from utils.encoding.bcd import decode_bcd
 
 class ResponseParser:
-    """
-    Parse SS7 MAP responses.
-    """
+    def __init__(self, db_path: str = "ss7_data.db"):
+        self.db_path = db_path
+        self.logger = logging.getLogger(__name__)
+        self._init_db()
 
-    @staticmethod
-    def parse_response(response: bytes) -> Dict[str, Any]:
-        """
-        Parse an SS7 MAP response.
+    def _init_db(self):
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("DROP TABLE IF EXISTS ss7_transactions")
+            cursor.execute("""
+                CREATE TABLE ss7_transactions (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    operation TEXT NOT NULL,
+                    imsi TEXT,
+                    msisdn TEXT,
+                    vlr_gt TEXT,
+                    gt TEXT,
+                    ssn INTEGER,
+                    target_ip TEXT,
+                    target_port INTEGER,
+                    protocol TEXT,
+                    request_data TEXT,
+                    response_data TEXT,
+                    status TEXT,
+                    invoke_id INTEGER,
+                    opcode INTEGER,
+                    timestamp TEXT
+                )
+            """)
+            conn.commit()
 
-        Args:
-            response: Raw response bytes
+    def store_transaction(self, operation: str, imsi: str, msisdn: str, vlr_gt: str, gt: str, ssn: int, target_ip: str, target_port: int, protocol: str, request_data: str, response_data: str, status: str, invoke_id: int, opcode: int):
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            timestamp = datetime.utcnow().isoformat()
+            cursor.execute("""
+                INSERT INTO ss7_transactions (
+                    operation, imsi, msisdn, vlr_gt, gt, ssn, target_ip, target_port, protocol,
+                    request_data, response_data, status, invoke_id, opcode, timestamp
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                operation, imsi, msisdn, vlr_gt, gt, ssn, target_ip, target_port, protocol,
+                request_data, response_data, status, invoke_id, opcode, timestamp
+            ))
+            conn.commit()
 
-        Returns:
-            Dictionary with parsed response fields (status, invoke_id, opcode, params)
+    def get_history(self, limit: int = 10) -> list:
+        with sqlite3.connect(self.db_path) as conn:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM ss7_transactions ORDER BY timestamp DESC LIMIT ?", (limit,))
+            return [dict(row) for row in cursor.fetchall()]
 
-        Raises:
-            ValueError: If response is invalid or cannot be parsed
-        """
+    def get_filtered_history(self, operation: str = None, start_date: str = None, end_date: str = None, limit: int = 10) -> list:
+        query = "SELECT * FROM ss7_transactions WHERE 1=1"
+        params = []
+        if operation:
+            query += " AND operation = ?"
+            params.append(operation)
+        if start_date:
+            query += " AND timestamp >= ?"
+            params.append(start_date)
+        if end_date:
+            query += " AND timestamp <= ?"
+            params.append(end_date)
+        query += " ORDER BY timestamp DESC LIMIT ?"
+        params.append(limit)
+        with sqlite3.connect(self.db_path) as conn:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            cursor.execute(query, params)
+            return [dict(row) for row in cursor.fetchall()]
+
+    def parse_response(self, response: bytes) -> dict:
         if not response:
-            logging.warning("Empty response received")
+            self.logger.warning("Empty response received")
             return {"status": "no_response", "message": "Empty response"}
-
-        if len(response) < 6:
-            logging.warning("Response too short for MAP parsing")
-            return {"status": "error", "message": "Response too short"}
-
+        
         try:
-            # Extract TCAP/MAP fields
-            invoke_id = response[2]
-            opcode = response[5]
-            params_start = 8
-            params_len = response[7]
-
-            if len(response) < params_start + params_len:
-                logging.warning("Incomplete parameters in response")
-                return {"status": "error", "message": "Incomplete parameters"}
-
-            params_data = response[params_start:params_start + params_len]
-
-            # Decode IMSI and MSISDN
-            imsi = None
-            msisdn = None
-            if len(params_data) >= 10:
-                imsi_data = params_data[2:10]  # Skip tag and length
-                imsi = decode_bcd(imsi_data)
-            if len(params_data) >= 17:
-                msisdn_data = params_data[12:17]  # Skip tag and length
-                msisdn = decode_bcd(msisdn_data)
-
+            sccp = SCCP_UDT(response)
+            if not sccp.haslayer(TCAP_ReturnResultLast):
+                self.logger.warning("No TCAP_ReturnResultLast layer in response")
+                return {"status": "error", "message": "No TCAP layer"}
+            
+            tcap = sccp[TCAP_ReturnResultLast]
             result = {
                 "status": "success",
-                "invoke_id": invoke_id,
-                "opcode": opcode,
-                "params": {
-                    "imsi": imsi,
-                    "msisdn": msisdn
-                }
+                "invoke_id": tcap.invoke_id,
+                "opcode": tcap.opcode,
+                "params": {}
             }
-            logging.info(f"Parsed response: {result}")
+            
+            if tcap.haslayer(MAP_SRI):
+                map_sri = tcap[MAP_SRI]
+                result["params"].update({
+                    "imsi": decode_bcd(map_sri.imsi) if map_sri.imsi else None,
+                    "msisdn": decode_bcd(map_sri.msisdn) if map_sri.msisdn else None
+                })
+            elif tcap.haslayer(MAP_ATI):
+                map_ati = tcap[MAP_ATI]
+                result["params"].update({
+                    "imsi": decode_bcd(map_ati.imsi) if map_ati.imsi else None
+                })
+            elif tcap.haslayer(MAP_UL):
+                map_ul = tcap[MAP_UL]
+                result["params"].update({
+                    "imsi": decode_bcd(map_ul.imsi) if map_ul.imsi else None,
+                    "vlr_gt": decode_bcd(map_ul.vlr_gt) if map_ul.vlr_gt else None
+                })
+            elif tcap.haslayer(MAP_PSI):
+                map_psi = tcap[MAP_PSI]
+                result["params"].update({
+                    "imsi": decode_bcd(map_psi.imsi) if map_psi.imsi else None
+                })
+            else:
+                self.logger.warning("Unknown MAP layer in response")
+                return {"status": "error", "message": "Unknown MAP layer"}
+            
             return result
-
         except Exception as e:
-            logging.error(f"Error parsing response: {e}")
+            self.logger.error(f"Response parsing error: {e}")
             return {"status": "error", "message": str(e)}
-
-    @staticmethod
-    def format_response(parsed: Dict[str, Any]) -> str:
-        """
-        Format a parsed response into a human-readable string.
-
-        Args:
-            parsed: Parsed response dictionary
-
-        Returns:
-            Formatted string
-        """
-        status = parsed.get("status", "unknown")
-        if status == "no_response":
-            return "No response received"
-        elif status == "error":
-            return f"Error: {parsed.get('message', 'Unknown error')}"
-        elif status == "success":
-            result = [f"Status: Success", f"Invoke ID: {parsed.get('invoke_id')}", f"Opcode: {parsed.get('opcode')}"]
-            params = parsed.get("params", {})
-            if params.get("imsi"):
-                result.append(f"IMSI: {params['imsi']}")
-            if params.get("msisdn"):
-                result.append(f"MSISDN: {params['msisdn']}")
-            return "\n".join(result)
-        return "Unknown response format"

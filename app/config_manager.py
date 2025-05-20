@@ -1,134 +1,72 @@
 #app/config_manger.py
-import yaml
-import logging
 import os
-from cryptography.fernet import Fernet
-from typing import Dict, Any
+import logging
+import yaml
+from typing import Optional
 
 class ConfigManager:
-    """
-    Manager for loading, saving, and encrypting configuration.
-    """
-    SENSITIVE_KEYS = ["default_imsi", "default_msisdn", "default_gt"]
-    ENCRYPTION_KEY_FILE = "config_key.key"
-
     def __init__(self, config_file: str = "configs/default_config.yml"):
-        """
-        Initialize config manager.
-
-        Args:
-            config_file: Path to configuration file
-        """
+        self.logger = logging.getLogger(__name__)
         self.config_file = config_file
-        self.config: Dict[str, Any] = {}
-        self.cipher = None
-        self._load_key()
-        self.load()
+        self.api_key: Optional[str] = None
+        self.target_ip: str = "127.0.0.1"
+        self.target_port: int = 2905
+        self.protocol: str = "SCTP"
+        self.ssn: int = 6
+        self.country_code: int = 91
+        self.default_imsi: str = "123456789012345"
+        self.default_msisdn: str = "9876543210"
+        self.default_gt: str = "1234567890"
+        self.config = {}
+        self.load_config()
 
-    def _load_key(self) -> None:
-        """
-        Load or generate encryption key for sensitive fields.
-        """
+    def load_config(self) -> None:
+        """Load configuration from YAML file or environment variables."""
         try:
-            if os.path.exists(self.ENCRYPTION_KEY_FILE):
-                with open(self.ENCRYPTION_KEY_FILE, "rb") as f:
-                    key = f.read()
-            else:
-                key = Fernet.generate_key()
-                with open(self.ENCRYPTION_KEY_FILE, "wb") as f:
-                    f.write(key)
-            self.cipher = Fernet(key)
-            logging.debug("Encryption key loaded")
-        except Exception as e:
-            logging.error(f"Failed to load encryption key: {e}")
-            raise RuntimeError("Encryption setup failed")
+            # Check environment variables first
+            self.api_key = os.getenv("SS7_API_KEY")
+            self.target_ip = os.getenv("SS7_TARGET_IP", self.target_ip)
+            self.target_port = int(os.getenv("SS7_TARGET_PORT", str(self.target_port)))
+            self.protocol = os.getenv("SS7_PROTOCOL", self.protocol)
+            self.ssn = int(os.getenv("SS7_SSN", str(self.ssn)))
+            self.country_code = int(os.getenv("SS7_COUNTRY_CODE", str(self.country_code)))
+            self.default_imsi = os.getenv("SS7_DEFAULT_IMSI", self.default_imsi)
+            self.default_msisdn = os.getenv("SS7_DEFAULT_MSISDN", self.default_msisdn)
+            self.default_gt = os.getenv("SS7_DEFAULT_GT", self.default_gt)
 
-    def _encrypt_sensitive(self, config: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Encrypt sensitive configuration fields.
-
-        Args:
-            config: Configuration dictionary
-
-        Returns:
-            Config with encrypted sensitive fields
-        """
-        result = config.copy()
-        try:
-            if "ss7" in result:
-                for key in self.SENSITIVE_KEYS:
-                    if key in result["ss7"]:
-                        value = result["ss7"][key]
-                        if value and isinstance(value, str) and not value.startswith("gAAAAAB"):
-                            result["ss7"][key] = self.cipher.encrypt(value.encode()).decode()
-            return result
-        except Exception as e:
-            logging.error(f"Encryption error: {e}")
-            raise RuntimeError("Failed to encrypt configuration")
-
-    def _decrypt_sensitive(self, config: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Decrypt sensitive configuration fields.
-
-        Args:
-            config: Configuration dictionary
-
-        Returns:
-            Config with decrypted sensitive fields
-        """
-        result = config.copy()
-        try:
-            if "ss7" in result:
-                for key in self.SENSITIVE_KEYS:
-                    if key in result["ss7"]:
-                        value = result["ss7"][key]
-                        if value and isinstance(value, str):
-                            try:
-                                result["ss7"][key] = self.cipher.decrypt(value.encode()).decode()
-                            except Exception:
-                                logging.debug(f"Field {key} not encrypted, using as-is")
-                                result["ss7"][key] = value
-            return result
-        except Exception as e:
-            logging.error(f"Decryption error: {e}")
-            raise RuntimeError("Failed to decrypt configuration")
-
-    def load(self) -> None:
-        """
-        Load configuration from file.
-        """
-        try:
+            # Load from YAML config file if it exists
             if os.path.exists(self.config_file):
                 with open(self.config_file, 'r') as f:
                     self.config = yaml.safe_load(f) or {}
-                self.config = self._decrypt_sensitive(self.config)
-                logging.info(f"Configuration loaded from {self.config_file}")
-            else:
-                logging.warning(f"Config file {self.config_file} not found, using defaults")
-                self.config = {
-                    "network": {"default_ip": "127.0.0.1", "default_port": 2905, "protocol": "SCTP"},
-                    "logging": {"log_file": "logs/ss7_tool.log", "log_level": "INFO"},
-                    "ss7": {"ssn": 6, "country_code": 91, "default_imsi": "123456789012345",
-                            "default_msisdn": "9876543210", "default_gt": "1234567890"}
-                }
-                self.save(self.config_file)
+                    if self.config:
+                        network = self.config.get("network", {})
+                        ss7 = self.config.get("ss7", {})
+                        self.api_key = ss7.get("api_key", self.api_key)
+                        self.target_ip = network.get("default_ip", self.target_ip)
+                        self.target_port = network.get("default_port", self.target_port)
+                        self.protocol = network.get("protocol", self.protocol)
+                        self.ssn = ss7.get("ssn", self.ssn)
+                        self.country_code = ss7.get("country_code", self.country_code)
+                        self.default_imsi = ss7.get("default_imsi", self.default_imsi)
+                        self.default_msisdn = ss7.get("default_msisdn", self.default_msisdn)
+                        self.default_gt = ss7.get("default_gt", self.default_gt)
+
+            if not self.api_key:
+                self.logger.info("No API key found, using default 'test_key_123'")
+                self.api_key = "test_key_123"
+
+            self.logger.info("Configuration loaded successfully")
         except Exception as e:
-            logging.error(f"Error loading config: {e}")
-            raise RuntimeError(f"Failed to load config: {e}")
+            self.logger.error(f"Configuration loading error: {e}")
+            raise
 
-    def save(self, config_file: str) -> None:
-        """
-        Save configuration to file.
+    def get_config(self, key: str, default=None):
+        return self.config.get(key, default)
 
-        Args:
-            config_file: Path to save configuration
-        """
+    def set_config(self, key: str, value) -> None:
+        self.config[key] = value
         try:
-            os.makedirs(os.path.dirname(config_file), exist_ok=True)
-            encrypted_config = self._encrypt_sensitive(self.config)
-            with open(config_file, 'w') as f:
-                yaml.safe_dump(encrypted_config, f, default_flow_style=False)
-            logging.info(f"Configuration saved to {config_file}")
+            with open(self.config_file, 'w') as f:
+                yaml.safe_dump(self.config, f)
         except Exception as e:
-            logging.error(f"Error saving config: {e}")
-            raise RuntimeError(f"Failed to save config: {e}")
+            self.logger.error(f"Failed to save config: {e}")

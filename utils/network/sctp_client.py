@@ -1,95 +1,82 @@
 # utils/network/sctp_client.py
-import logging
 import socket
-import sctp
-from typing import Optional
+import logging
+import time
+from scapy.all import raw
 
 class SCTPClient:
-    """
-    SCTP client for SS7 communication.
-    """
-    def __init__(self, host: str, port: int, timeout: float = 10.0):
-        """
-        Initialize SCTP client.
-
-        Args:
-            host: Target host IP
-            port: Target port
-            timeout: Socket timeout in seconds
-        """
-        self.host = host
-        self.port = port
+    def __init__(self, target_ip: str, target_port: int, timeout: float = 2.0, retries: int = 3):
+        self.target_ip = target_ip
+        self.target_port = target_port
         self.timeout = timeout
-        self.sock: Optional[sctp.sctpsocket_tcp] = None
+        self.retries = retries
+        self.sock = None
+        self.logger = logging.getLogger(__name__)
 
-    def connect(self) -> None:
-        """
-        Connect to the target host.
-
-        Raises:
-            socket.timeout: If connection times out
-            socket.gaierror: If host resolution fails
-            Exception: For other connection errors
-        """
+    def connect(self):
         try:
-            logging.debug(f"Attempting SCTP connection to {self.host}:{self.port}")
-            self.sock = sctp.sctpsocket_tcp(socket.AF_INET)
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_SCTP)
             self.sock.settimeout(self.timeout)
-            self.sock.connect((self.host, self.port))
-            logging.info(f"Successfully connected to {self.host}:{self.port}")
-        except socket.timeout:
-            logging.error(f"Connection to {self.host}:{self.port} timed out after {self.timeout}s")
-            raise
-        except socket.gaierror as e:
-            logging.error(f"Failed to resolve host {self.host}: {e}")
-            raise
+            self.sock.connect((self.target_ip, self.target_port))
+            self.logger.info(f"Connected to {self.target_ip}:{self.target_port}")
         except Exception as e:
-            logging.error(f"Unexpected error connecting to {self.host}:{self.port}: {e}")
+            self.logger.error(f"Connection error: {e}")
             raise
 
-    def send(self, data: bytes) -> bytes:
-        """
-        Send data and receive response.
-
-        Args:
-            data: Data to send
-
-        Returns:
-            Response data
-
-        Raises:
-            socket.timeout: If send/receive times out
-            Exception: For other send/receive errors
-        """
+    def send(self, packet: bytes):
+        if not self.sock:
+            self.connect()
         try:
-            if not self.sock:
-                self.connect()
-            logging.debug(f"Sending data: {data.hex().upper()}")
-            self.sock.send(data)
-            self.sock.settimeout(self.timeout)
-            response = b""
+            self.sock.sendall(packet)
+            self.logger.debug(f"Sent packet: {packet.hex()}")
+        except Exception as e:
+            self.logger.error(f"Send error: {e}")
+            raise
+
+    def receive(self, buffer_size: int = 1024) -> bytes:
+        if not self.sock:
+            self.logger.error("No active connection")
+            return b""
+        for attempt in range(self.retries):
             try:
-                response = self.sock.recv(4096)
-                logging.debug(f"Received response: {response.hex().upper()}")
+                data = self.sock.recv(buffer_size)
+                if data:
+                    self.logger.debug(f"Received packet: {data.hex()}")
+                    return data
+                self.logger.warning(f"Empty response on attempt {attempt + 1}")
+                time.sleep(0.1)
             except socket.timeout:
-                logging.warning(f"No response received within {self.timeout}s")
-            return response
-        except socket.timeout:
-            logging.error(f"Send/receive timeout for {self.host}:{self.port} after {self.timeout}s")
-            raise
-        except Exception as e:
-            logging.error(f"Unexpected error during send/receive: {e}")
-            raise
+                self.logger.warning(f"Receive timeout on attempt {attempt + 1}")
+            except Exception as e:
+                self.logger.error(f"Receive error: {e}")
+                break
+        return b""
 
-    def close(self) -> None:
-        """
-        Close the SCTP connection.
-        """
+    def send_packet(self, packet: bytes) -> bytes:
+        try:
+            self.connect()
+            self.send(packet)
+            response = self.receive()
+            return response
+        except Exception as e:
+            self.logger.error(f"Send/receive error: {e}")
+            raise
+        finally:
+            self.close()
+
+    def close(self):
         if self.sock:
             try:
                 self.sock.close()
-                logging.info(f"SCTP connection to {self.host}:{self.port} closed")
+                self.logger.info("Connection closed")
             except Exception as e:
-                logging.error(f"Error closing connection: {e}")
+                self.logger.error(f"Close error: {e}")
             finally:
                 self.sock = None
+
+    def __enter__(self):
+        self.connect()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()

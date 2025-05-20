@@ -1,79 +1,136 @@
-from scapy.packet import Packet, bind_layers
-from scapy.fields import XByteField, FieldLenField, FieldListField, StrLenField
+# utils/protocols/ss7_layers.py
+from scapy.all import Packet, ByteField, ShortField, StrLenField, bind_layers
+from scapy.layers.inet import IP, UDP, TCP
+from scapy.packet import bind_layers
 
-class ThreeBytesField(StrLenField):
-    """
-    Custom Scapy field for 3-byte values (e.g., OPC, DPC).
-    """
-    def __init__(self, name, default):
-        if len(default) != 3:
-            raise ValueError(f"{name} must be exactly 3 bytes, got {len(default)} bytes")
-        StrLenField.__init__(self, name, default)
-
-class MTP3(Packet):
-    """
-    MTP3 layer for SS7 protocol.
-    """
-    name = "MTP3"
+class SCCP_UDT(Packet):
+    name = "SCCP_UDT"
     fields_desc = [
-        XByteField("sio", 0x00),  # Service Information Octet
-        ThreeBytesField("opc", b"\x00\x00\x00"),  # Originating Point Code
-        ThreeBytesField("dpc", b"\x00\x00\x00"),  # Destination Point Code
-        XByteField("sls", 0x00),  # Signalling Link Selection
+        ByteField("msg_type", 0x09),
+        ByteField("protocol_class", 0x00),
+        ByteField("pointer1", 0x03),
+        ByteField("pointer2", 0x00),
+        ByteField("pointer3", 0x00),
+        ShortField("called_len", 0),
+        ShortField("calling_len", 0),
+        ShortField("data_len", 0),
+        StrLenField("called_party", b"", length_from=lambda pkt: pkt.called_len),
+        StrLenField("calling_party", b"", length_from=lambda pkt: pkt.calling_len),
+        StrLenField("data", b"", length_from=lambda pkt: pkt.data_len)
     ]
 
-class SCCP(Packet):
-    """
-    SCCP layer for SS7 protocol (UDT message).
-    """
-    name = "SCCP"
+class TCAP_Invoke(Packet):
+    name = "TCAP_Invoke"
     fields_desc = [
-        XByteField("message_type", 0x09),  # UDT
-        XByteField("protocol_class", 0x00),
-        XByteField("pointer_called", 0x03),
-        XByteField("pointer_calling", 0x00),
-        XByteField("pointer_data", 0x00),
-        FieldLenField("called_party_len", None, length_of="called_party", fmt="B"),
-        StrLenField("called_party", b"", length_from=lambda pkt: pkt.called_party_len),
-        FieldLenField("calling_party_len", None, length_of="calling_party", fmt="B"),
-        StrLenField("calling_party", b"", length_from=lambda pkt: pkt.calling_party_len),
-        FieldLenField("data_len", None, length_of="data", fmt="B"),
-        StrLenField("data", b"", length_from=lambda pkt: pkt.data_len),
+        ByteField("tag", 0x02),
+        ByteField("component_len", None),
+        ByteField("invoke_tag", 0x0C),
+        ByteField("invoke_len", None),
+        ByteField("invoke_id", 0x02),
+        ByteField("opcode_tag", 0x02),
+        ByteField("opcode_len", 0x01),
+        ByteField("opcode", 0x04)
     ]
 
     def post_build(self, pkt, pay):
-        """
-        Adjust SCCP pointers after packet construction.
-        """
-        if self.pointer_calling == 0:
-            self.pointer_calling = 3 + self.called_party_len
-        if self.pointer_data == 0:
-            self.pointer_data = 3 + self.called_party_len + self.calling_party_len
-        return Packet.post_build(self, pkt, pay)
+        if self.component_len is None:
+            invoke_len = 4 + len(pay)  # invoke_id (1) + opcode_tag (1) + opcode_len (1) + opcode (1)
+            component_len = 2 + invoke_len  # invoke_tag (1) + invoke_len (1)
+            pkt = pkt[:1] + bytes([component_len]) + pkt[2:3] + bytes([invoke_len]) + pkt[4:] + pay
+        return pkt
 
-class MAP(Packet):
-    """
-    MAP layer for SS7 protocol per 3GPP TS 29.002.
-    """
-    name = "MAP"
+class TCAP_ReturnResultLast(Packet):
+    name = "TCAP_ReturnResultLast"
     fields_desc = [
-        XByteField("invoke_id_tag", 0x02),  # Invoke ID tag
-        XByteField("invoke_id_length", 0x01),
-        XByteField("invoke_id", 0x02),
-        XByteField("opcode_tag", 0x02),  # Operation code tag
-        XByteField("opcode_length", 0x01),
-        XByteField("opcode", 0x00),  # Operation code (e.g., 0x04 for SendRoutingInfo)
-        XByteField("param_tag", 0x30),  # Parameters sequence tag
-        FieldLenField("param_length", None, length_of="params", fmt="B"),
-        FieldListField(
-            "params",
-            [],
-            StrLenField("", b"", length_from=lambda pkt: pkt.param_length),
-            length_from=lambda pkt: pkt.param_length
-        ),
+        ByteField("tag", 0x04),
+        ByteField("component_len", None),
+        ByteField("invoke_id_tag", 0x02),
+        ByteField("invoke_id_len", 0x01),
+        ByteField("invoke_id", 0x02),
+        ByteField("sequence_tag", 0x30),
+        ByteField("sequence_len", None),
+        ByteField("opcode_tag", 0x02),
+        ByteField("opcode_len", 0x01),
+        ByteField("opcode", 0x04)
     ]
 
-# Bind layers for SS7 stack
-bind_layers(SCCP, MAP, data_len=lambda x: x > 0)
-bind_layers(MTP3, SCCP)
-# Note: SCTP binding requires custom handling in sctp_client.py due to Scapy limitations
+    def post_build(self, pkt, pay):
+        if self.sequence_len is None:
+            sequence_len = 3 + len(pay)  # opcode_tag (1) + opcode_len (1) + opcode (1) + payload
+            component_len = 5 + sequence_len  # invoke_id_tag (1) + invoke_id_len (1) + invoke_id (1) + sequence_tag (1) + sequence_len (1)
+            pkt = pkt[:1] + bytes([component_len]) + pkt[2:6] + bytes([sequence_len]) + pkt[7:] + pay
+        return pkt
+
+class MAP_SRI(Packet):
+    name = "MAP_SRI"
+    fields_desc = [
+        ByteField("tag", 0x04),
+        ByteField("len", None),
+        StrLenField("imsi", b"", length_from=lambda pkt: 8),
+        StrLenField("msisdn", b"", length_from=lambda pkt: 6)
+    ]
+
+    def post_build(self, pkt, pay):
+        if self.len is None:
+            total_len = len(pkt[2:]) + len(pay)
+            pkt = pkt[:1] + bytes([total_len]) + pkt[2:] + pay
+        return pkt
+
+class MAP_ATI(Packet):
+    name = "MAP_ATI"
+    fields_desc = [
+        ByteField("tag", 0x47),
+        ByteField("len", None),
+        StrLenField("imsi", b"", length_from=lambda pkt: 8)
+    ]
+
+    def post_build(self, pkt, pay):
+        if self.len is None:
+            total_len = len(pkt[2:]) + len(pay)
+            pkt = pkt[:1] + bytes([total_len]) + pkt[2:] + pay
+        return pkt
+
+class MAP_UL(Packet):
+    name = "MAP_UL"
+    fields_desc = [
+        ByteField("tag", 0x02),
+        ByteField("len", None),
+        StrLenField("imsi", b"", length_from=lambda pkt: 8),
+        StrLenField("vlr_gt", b"", length_from=lambda pkt: 6)
+    ]
+
+    def post_build(self, pkt, pay):
+        if self.len is None:
+            total_len = len(pkt[2:]) + len(pay)
+            pkt = pkt[:1] + bytes([total_len]) + pkt[2:] + pay
+        return pkt
+
+class MAP_PSI(Packet):
+    name = "MAP_PSI"
+    fields_desc = [
+        ByteField("tag", 0x46),
+        ByteField("len", None),
+        StrLenField("imsi", b"", length_from=lambda pkt: 8)
+    ]
+
+    def post_build(self, pkt, pay):
+        if self.len is None:
+            total_len = len(pkt[2:]) + len(pay)
+            pkt = pkt[:1] + bytes([total_len]) + pkt[2:] + pay
+        return pkt
+
+def set_map_fields(map_packet, **kwargs):
+    for field, value in kwargs.items():
+        if hasattr(map_packet, field):
+            encoded_value = value.encode('utf-8') if isinstance(value, str) else value
+            setattr(map_packet, field, encoded_value)
+    total_len = sum(len(getattr(map_packet, f.name)) for f in map_packet.fields_desc if f.name not in ["tag", "len"])
+    map_packet.len = total_len
+    return map_packet
+
+# Bind layers for proper dissection
+bind_layers(SCCP_UDT, TCAP_Invoke)
+bind_layers(TCAP_Invoke, MAP_SRI)
+bind_layers(TCAP_Invoke, MAP_ATI)
+bind_layers(TCAP_Invoke, MAP_UL)
+bind_layers(TCAP_Invoke, MAP_PSI)

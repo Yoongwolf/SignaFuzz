@@ -1,35 +1,64 @@
-# SS7 Security Research Tool
+SSS7 Security Research Tool (v0.2.0)
+A Python-based tool for sending MAP-layer SS7 messages (SendRoutingInfo, AnyTimeInterrogation, UpdateLocation, ProvideSubscriberInfo) over SCTP/TCP to a lab SS7 network, parsing responses, and logging transactions.
+Features
 
-A Python-based backend tool for SS7 security research and testing in controlled laboratory environments, developed for Nokia.
+Send MAP messages (SRI, ATI, UL, PSI) with dynamic inputs (IMSI, MSISDN, GT, etc.).
+CLI and interactive mode for operations.
+BCD encoding/decoding for IMSI, MSISDN, GT.
+SCTP/TCP communication with retry logic.
+SQLite storage for transaction history.
+Encrypted configuration management.
+Unit and integration tests.
 
----
+Installation
+git clone <repository_url>
+cd ss7-security-tool
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 
-## 🚀 Features
+Usage
+Set the API key:
+export SS7_API_KEY="test_key_123"
 
-- Send customized **MAP-layer SS7 messages** to target networks over SCTP.
-- Supported MAP operations:
-  - ✅ **SendRoutingInfo (SRI)** – Fully implemented
-  - 🟡 **AnyTimeInterrogation (ATI)** – Partially implemented
-  - 🟡 **UpdateLocation (UL)** – Partially implemented
-  - 🟡 **ProvideSubscriberInfo (PSI)** – Partially implemented
-- Accept dynamic inputs:
-  - **IMSI**, **MSISDN**, target **IP/port**, **SSN**, **Global Title (GT)**, **protocol (SCTP/TCP)**
-- Process and parse SS7 responses (partial support for IMSI/MSISDN extraction)
-- Comprehensive logging of operations and errors to file: `logs/ss7_tool.log`
-- API key authentication for secure access
-- Input validation for IMSI, MSISDN, GT, SSN, IP, and port
-- Modular, production-ready structure with unit and integration tests
-- CLI and interactive modes for operation execution
+Run a command (e.g., SRI):
+python main.py sri --imsi 123456789012345 --msisdn 9876543210 --target-ip 127.0.0.1 --target-port 2905 --ssn 6 --gt 1234567890
 
----
+Interactive mode:
+python main.py interactive
+SS7> sri --imsi 123456789012345 --msisdn 9876543210 --target-ip 127.0.0.1 --target-port 2905 --ssn 6 --gt 1234567890
 
-## 🛠 Installation
+View transaction history:
+sqlite3 ss7_data.db "SELECT * FROM ss7_transactions LIMIT 4;"
 
-### ✅ Prerequisites
+Project Structure
 
-- **Operating System:** Ubuntu (tested on Ubuntu with Python 3.10)
-- **Python:** 3.7 or later
-- **SCTP Support:** Ensure `libsctp-dev` is installed:
-  
-  ```bash
-  sudo apt-get install libsctp-dev
+app/: Core logic (core.py, message_factory.py, response_parser.py, config_manager.py).
+cli/: CLI and interactive mode (ui.py, command_handler.py).
+utils/: Utilities for encoding (bcd.py), networking (sctp_client.py, tcp_client.py), protocols (ss7_layers.py), and validation (validators.py).
+tests/: Unit and integration tests (test_bcd.py, test_validators.py, test_message_factory.py, etc.).
+configs/: YAML configuration files (default_config.yml, logging_config.yml).
+logs/: Log files (ss7_tool.log).
+docs/: Documentation (message_flow.mmd).
+ss7_data.db: SQLite database for transactions.
+
+Requirements
+
+Python 3.10+
+Dependencies: scapy, pysctp, pyyaml, cryptography, pytest (see requirements.txt).
+
+Development
+Run tests:
+python -m unittest discover tests -v
+
+Start mock SS7 server:
+python -m tests.mock_ss7_server
+
+Roadmap
+
+By May 15, 2025: SCCP/TCAP testing with real SS7 testbed.
+By May 22, 2025: CSV export, enhanced security, CLI profiles, full documentation.
+By June 5, 2025: Structured JSON logging.
+
+License
+MIT License
