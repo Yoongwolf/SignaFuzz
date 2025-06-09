@@ -1,4 +1,3 @@
-#app/core.py
 import logging
 import hashlib
 from utils.network.sctp_client import SCTPClient
@@ -62,52 +61,28 @@ class SS7Core:
         packet = self.message_factory.create_psi_message(imsi, gt, ssn)
         return self._send_packet(packet, "PSI", target_ip, target_port, {"imsi": imsi, "gt": gt, "ssn": ssn, "target_ip": target_ip, "target_port": target_port, "protocol": protocol})
 
-    def _send_packet(self, packet: bytes, operation: str, target_ip: str, target_port: int, params: dict) -> dict:
-        try:
-            client = SCTPClient(target_ip, target_port) if params["protocol"] == "SCTP" else TCPClient(target_ip, target_port)
-            response = client.send_packet(packet)
-            parsed_response = self.response_parser.parse_response(response)
-            parsed_response["params"] = params  # Add params for test compatibility
-            self.response_parser.store_transaction(
-                operation=operation,
-                imsi=params.get("imsi"),
-                msisdn=params.get("msisdn"),
-                vlr_gt=params.get("vlr_gt"),
-                gt=params.get("gt"),
-                ssn=params.get("ssn"),
-                target_ip=target_ip,
-                target_port=target_port,
-                protocol=params["protocol"],
-                request_data=packet.hex(),
-                response_data=response.hex() if response else "",
-                status=parsed_response.get("status", "no_response"),
-                invoke_id=parsed_response.get("invoke_id", None),
-                opcode=parsed_response.get("opcode", None)
-            )
-            return parsed_response
-        except Exception as e:
-            self.logger.error(f"Failed to send {operation} packet: {e}")
-            parsed_response = {"status": "error", "message": str(e), "params": params}
-            self.response_parser.store_transaction(
-                operation=operation,
-                imsi=params.get("imsi"),
-                msisdn=params.get("msisdn"),
-                vlr_gt=params.get("vlr_gt"),
-                gt=params.get("gt"),
-                ssn=params.get("ssn"),
-                target_ip=target_ip,
-                target_port=target_port,
-                protocol=params["protocol"],
-                request_data=packet.hex(),
-                response_data="",
-                status="error",
-                invoke_id=None,
-                opcode=None
-            )
-            return parsed_response
+    
 
     def get_history(self, limit: int = 10) -> list:
         return self.response_parser.get_history(limit=limit)
 
     def get_filtered_history(self, operation: str = None, start_date: str = None, end_date: str = None, limit: int = 10) -> list:
         return self.response_parser.get_filtered_history(operation, start_date, end_date, limit)
+    
+    def _send_packet(self, packet, operation, target_ip, target_port, params):
+        try:
+            client = SCTPClient(target_ip, target_port) if params["protocol"] == "SCTP" else TCPClient(target_ip, target_port)
+            self.logger.info(f"Sending {operation} packet to {target_ip}:{target_port} with protocol {params['protocol']}")
+            response = client.send_packet(packet)
+            result = self.response_parser.parse_response(response)
+        except Exception as e:
+            self.logger.error(f"Failed to send {operation} packet: {str(e)}")
+            result = {
+                "status": "error",
+                "message": str(e),
+                "operation": operation,
+                "params": params,  # Include params for storage
+                "raw_response": ""
+            }
+        self.response_parser._store_response(result)
+        return result

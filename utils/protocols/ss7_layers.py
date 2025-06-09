@@ -1,6 +1,5 @@
 # utils/protocols/ss7_layers.py
-from scapy.all import Packet, ByteField, ShortField, StrLenField, bind_layers
-from scapy.layers.inet import IP, UDP, TCP
+from scapy.all import Packet, ByteField, ShortField, StrLenField
 from scapy.packet import bind_layers
 
 class SCCP_UDT(Packet):
@@ -19,6 +18,9 @@ class SCCP_UDT(Packet):
         StrLenField("data", b"", length_from=lambda pkt: pkt.data_len)
     ]
 
+    def extract_padding(self, s):
+        return self.data, s
+
 class TCAP_Invoke(Packet):
     name = "TCAP_Invoke"
     fields_desc = [
@@ -35,7 +37,7 @@ class TCAP_Invoke(Packet):
     def post_build(self, pkt, pay):
         if self.component_len is None:
             invoke_len = 4 + len(pay)  # invoke_id (1) + opcode_tag (1) + opcode_len (1) + opcode (1)
-            component_len = 2 + invoke_len  # invoke_tag (1) + invoke_len (1)
+            component_len = invoke_len  # Exclude tag
             pkt = pkt[:1] + bytes([component_len]) + pkt[2:3] + bytes([invoke_len]) + pkt[4:] + pay
         return pkt
 
@@ -66,8 +68,8 @@ class MAP_SRI(Packet):
     fields_desc = [
         ByteField("tag", 0x04),
         ByteField("len", None),
-        StrLenField("imsi", b"", length_from=lambda pkt: 8),
-        StrLenField("msisdn", b"", length_from=lambda pkt: 6)
+        StrLenField("imsi", b"", length_from=lambda pkt: 15),  # 15 bytes
+        StrLenField("msisdn", b"", length_from=lambda pkt: 10)  # 10 bytes
     ]
 
     def post_build(self, pkt, pay):
@@ -81,7 +83,7 @@ class MAP_ATI(Packet):
     fields_desc = [
         ByteField("tag", 0x47),
         ByteField("len", None),
-        StrLenField("imsi", b"", length_from=lambda pkt: 8)
+        StrLenField("imsi", b"", length_from=lambda pkt: 15)
     ]
 
     def post_build(self, pkt, pay):
@@ -95,8 +97,8 @@ class MAP_UL(Packet):
     fields_desc = [
         ByteField("tag", 0x02),
         ByteField("len", None),
-        StrLenField("imsi", b"", length_from=lambda pkt: 8),
-        StrLenField("vlr_gt", b"", length_from=lambda pkt: 6)
+        StrLenField("imsi", b"", length_from=lambda pkt: 15),
+        StrLenField("vlr_gt", b"", length_from=lambda pkt: 10)
     ]
 
     def post_build(self, pkt, pay):
@@ -110,7 +112,7 @@ class MAP_PSI(Packet):
     fields_desc = [
         ByteField("tag", 0x46),
         ByteField("len", None),
-        StrLenField("imsi", b"", length_from=lambda pkt: 8)
+        StrLenField("imsi", b"", length_from=lambda pkt: 15)
     ]
 
     def post_build(self, pkt, pay):
@@ -128,9 +130,13 @@ def set_map_fields(map_packet, **kwargs):
     map_packet.len = total_len
     return map_packet
 
-# Bind layers for proper dissection
+# Bind layers based on opcode
 bind_layers(SCCP_UDT, TCAP_Invoke)
-bind_layers(TCAP_Invoke, MAP_SRI)
-bind_layers(TCAP_Invoke, MAP_ATI)
-bind_layers(TCAP_Invoke, MAP_UL)
-bind_layers(TCAP_Invoke, MAP_PSI)
+bind_layers(TCAP_Invoke, MAP_SRI, opcode=4)
+bind_layers(TCAP_Invoke, MAP_ATI, opcode=71)
+bind_layers(TCAP_Invoke, MAP_UL, opcode=2)
+bind_layers(TCAP_Invoke, MAP_PSI, opcode=59)
+bind_layers(TCAP_ReturnResultLast, MAP_SRI, opcode=4)
+bind_layers(TCAP_ReturnResultLast, MAP_ATI, opcode=71)
+bind_layers(TCAP_ReturnResultLast, MAP_UL, opcode=2)
+bind_layers(TCAP_ReturnResultLast, MAP_PSI, opcode=59)

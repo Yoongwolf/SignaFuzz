@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+logs/ss7_tool.log
+ss7_data.db
+.env

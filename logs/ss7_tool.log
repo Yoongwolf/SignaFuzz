@@ -346,3 +346,282 @@ AttributeError: 'CommandHandler' object has no attribute 'parse_interactive_args
 2025-05-19 10:25:59,219 ERROR: SS7_API_KEY not set
 2025-05-19 15:30:11,628 ERROR: Invalid API key
 2025-05-19 15:49:10,197 ERROR: SS7_API_KEY not set
+2025-05-20 16:18:49,163 - INFO - Configuration loaded successfully
+2025-05-20 16:18:49,169 - ERROR - Failed to send ATI packet: 'ResponseParser' object has no attribute 'store_transaction'
+2025-05-20 16:18:49,173 - INFO - Configuration loaded successfully
+2025-05-20 16:18:49,181 - INFO - Configuration loaded successfully
+2025-05-20 16:18:49,185 - ERROR - Invalid API key
+2025-05-20 16:18:49,186 - INFO - Configuration loaded successfully
+2025-05-20 16:18:49,191 - ERROR - Failed to send PSI packet: 'ResponseParser' object has no attribute 'store_transaction'
+2025-05-20 16:18:49,192 - INFO - Configuration loaded successfully
+2025-05-20 16:18:49,197 - ERROR - Failed to send SRI packet: 'ResponseParser' object has no attribute 'store_transaction'
+2025-05-20 16:18:49,198 - INFO - Configuration loaded successfully
+2025-05-20 16:18:49,203 - ERROR - Failed to send SRI packet: 'ResponseParser' object has no attribute 'store_transaction'
+2025-05-20 16:18:49,204 - INFO - Configuration loaded successfully
+2025-05-20 16:18:49,208 - ERROR - Failed to send UL packet: 'ResponseParser' object has no attribute 'store_transaction'
+2025-05-20 16:40:33,438 - INFO - Configuration loaded successfully
+2025-05-20 16:40:33,445 - INFO - Sending ATI packet to 127.0.0.1:2905 with protocol SCTP
+2025-05-20 16:40:33,445 - INFO - Received response for ATI
+2025-05-20 16:40:33,447 - INFO - Configuration loaded successfully
+2025-05-20 16:40:33,452 - INFO - Configuration loaded successfully
+2025-05-20 16:40:33,456 - ERROR - Invalid API key
+2025-05-20 16:40:33,457 - INFO - Configuration loaded successfully
+2025-05-20 16:40:33,462 - INFO - Sending PSI packet to 127.0.0.1:2905 with protocol SCTP
+2025-05-20 16:40:33,462 - INFO - Received response for PSI
+2025-05-20 16:40:33,464 - INFO - Configuration loaded successfully
+2025-05-20 16:40:33,469 - INFO - Sending SRI packet to 127.0.0.1:2905 with protocol SCTP
+2025-05-20 16:40:33,469 - INFO - Received response for SRI
+2025-05-20 16:40:33,470 - INFO - Configuration loaded successfully
+2025-05-20 16:40:33,475 - INFO - Sending SRI packet to 127.0.0.1:2906 with protocol TCP
+2025-05-20 16:40:33,475 - INFO - Received response for SRI
+2025-05-20 16:40:33,477 - INFO - Configuration loaded successfully
+2025-05-20 16:40:33,481 - INFO - Sending UL packet to 127.0.0.1:2905 with protocol SCTP
+2025-05-20 16:40:33,481 - INFO - Received response for UL
+2025-05-20 17:03:20,849 - INFO - Configuration loaded successfully
+2025-05-20 17:03:20,866 - INFO - Sending ATI packet to 127.0.0.1:2905 with protocol SCTP
+2025-05-20 17:03:20,866 - INFO - Received response for ATI
+2025-05-20 17:03:20,870 - INFO - Configuration loaded successfully
+2025-05-20 17:03:20,879 - INFO - Configuration loaded successfully
+2025-05-20 17:03:20,884 - ERROR - Invalid API key
+2025-05-20 17:03:20,888 - INFO - Configuration loaded successfully
+2025-05-20 17:03:20,896 - INFO - Sending PSI packet to 127.0.0.1:2905 with protocol SCTP
+2025-05-20 17:03:20,896 - INFO - Received response for PSI
+2025-05-20 17:03:20,900 - INFO - Configuration loaded successfully
+2025-05-20 17:03:20,907 - INFO - Sending SRI packet to 127.0.0.1:2905 with protocol SCTP
+2025-05-20 17:03:20,908 - INFO - Received response for SRI
+2025-05-20 17:03:20,912 - INFO - Configuration loaded successfully
+2025-05-20 17:03:20,918 - INFO - Sending SRI packet to 127.0.0.1:2906 with protocol TCP
+2025-05-20 17:03:20,918 - INFO - Received response for SRI
+2025-05-20 17:03:20,921 - INFO - Configuration loaded successfully
+2025-05-20 17:03:20,927 - INFO - Sending UL packet to 127.0.0.1:2905 with protocol SCTP
+2025-05-20 17:03:20,927 - INFO - Received response for UL
+2025-05-21 13:32:05,311 - INFO - Configuration loaded successfully
+2025-05-21 13:32:05,317 - INFO - Sending ATI packet to 127.0.0.1:2905 with protocol SCTP
+2025-05-21 13:32:05,318 - INFO - Received response for ATI
+2025-05-21 13:32:05,319 - INFO - Configuration loaded successfully
+2025-05-21 13:32:05,324 - INFO - Configuration loaded successfully
+2025-05-21 13:32:05,328 - ERROR - Invalid API key
+2025-05-21 13:32:05,329 - INFO - Configuration loaded successfully
+2025-05-21 13:32:05,333 - INFO - Sending PSI packet to 127.0.0.1:2905 with protocol SCTP
+2025-05-21 13:32:05,334 - INFO - Received response for PSI
+2025-05-21 13:32:05,335 - INFO - Configuration loaded successfully
+2025-05-21 13:32:05,341 - INFO - Sending SRI packet to 127.0.0.1:2905 with protocol SCTP
+2025-05-21 13:32:05,341 - INFO - Received response for SRI
+2025-05-21 13:32:05,343 - INFO - Configuration loaded successfully
+2025-05-21 13:32:05,347 - INFO - Sending SRI packet to 127.0.0.1:2906 with protocol TCP
+2025-05-21 13:32:05,347 - INFO - Received response for SRI
+2025-05-21 13:32:05,348 - INFO - Configuration loaded successfully
+2025-05-21 13:32:05,352 - INFO - Sending UL packet to 127.0.0.1:2905 with protocol SCTP
+2025-05-21 13:32:05,353 - INFO - Received response for UL
+2025-06-02 12:51:17,688 - INFO - Configuration loaded successfully
+2025-06-02 12:51:17,695 - INFO - Sending ATI packet to 127.0.0.1:2905 with protocol SCTP
+2025-06-02 12:51:17,695 - INFO - Received response for ATI
+2025-06-02 12:51:17,698 - INFO - Configuration loaded successfully
+2025-06-02 12:51:17,704 - INFO - Configuration loaded successfully
+2025-06-02 12:51:17,707 - ERROR - Invalid API key
+2025-06-02 12:51:17,709 - INFO - Configuration loaded successfully
+2025-06-02 12:51:17,714 - INFO - Sending PSI packet to 127.0.0.1:2905 with protocol SCTP
+2025-06-02 12:51:17,714 - INFO - Received response for PSI
+2025-06-02 12:51:17,716 - INFO - Configuration loaded successfully
+2025-06-02 12:51:17,720 - INFO - Sending SRI packet to 127.0.0.1:2905 with protocol SCTP
+2025-06-02 12:51:17,720 - INFO - Received response for SRI
+2025-06-02 12:51:17,722 - INFO - Configuration loaded successfully
+2025-06-02 12:51:17,726 - INFO - Sending SRI packet to 127.0.0.1:2906 with protocol TCP
+2025-06-02 12:51:17,727 - INFO - Received response for SRI
+2025-06-02 12:51:17,728 - INFO - Configuration loaded successfully
+2025-06-02 12:51:17,733 - INFO - Sending UL packet to 127.0.0.1:2905 with protocol SCTP
+2025-06-02 12:51:17,733 - INFO - Received response for UL
+2025-06-02 12:59:38,291 - INFO - Configuration loaded successfully
+2025-06-02 12:59:38,292 - INFO - Configuration loaded successfully
+2025-06-02 12:59:38,307 - INFO - Sending SRI packet to 127.0.0.1:2905 with protocol SCTP
+2025-06-02 12:59:38,308 - ERROR - Connection error: [Errno 111] Connection refused
+2025-06-02 12:59:38,308 - ERROR - Send/receive error: [Errno 111] Connection refused
+2025-06-02 12:59:38,308 - INFO - Connection closed
+2025-06-02 12:59:38,308 - ERROR - Failed to send SRI packet: [Errno 111] Connection refused
+2025-06-02 14:14:19,882 - INFO - Configuration loaded successfully
+2025-06-02 14:14:19,884 - INFO - Configuration loaded successfully
+2025-06-02 14:14:19,925 - INFO - Sending SRI packet to 127.0.0.1:2905 with protocol SCTP
+2025-06-02 14:14:19,925 - INFO - Connected to 127.0.0.1:2905
+2025-06-02 14:14:19,926 - WARNING - Empty response on attempt 1
+2025-06-02 14:14:20,026 - WARNING - Empty response on attempt 2
+2025-06-02 14:14:20,127 - WARNING - Empty response on attempt 3
+2025-06-02 14:14:20,228 - INFO - Connection closed
+2025-06-02 14:14:20,229 - INFO - Received response for SRI
+2025-06-02 14:14:20,229 - ERROR - No TCAP_ReturnResultLast layer in response
+2025-06-02 14:39:46,272 - INFO - Configuration loaded successfully
+2025-06-02 14:39:46,274 - INFO - Configuration loaded successfully
+2025-06-02 14:39:46,287 - INFO - Sending SRI packet to 127.0.0.1:2905 with protocol SCTP
+2025-06-02 14:39:46,288 - INFO - Connected to 127.0.0.1:2905
+2025-06-02 14:39:46,289 - INFO - Connection closed
+2025-06-02 14:39:46,289 - INFO - Received response for SRI
+2025-06-02 14:39:46,290 - ERROR - No TCAP_ReturnResultLast layer in response
+2025-06-02 15:41:57,880 - INFO - Configuration loaded successfully
+2025-06-02 15:41:57,881 - INFO - Configuration loaded successfully
+2025-06-02 15:41:57,882 - INFO - Sending SRI packet to 127.0.0.1:2905 with protocol SCTP
+2025-06-02 15:41:57,883 - INFO - Connected to 127.0.0.1:2905
+2025-06-02 15:41:57,883 - DEBUG - Sent packet: 0900030a1100050005002321436587091234567890021f0c1f02020104041931323334353637383930313233343539383736353433323130
+2025-06-02 15:41:57,884 - DEBUG - Received packet: 090003000000050005001a1234567890123456789004180201023013020104040e3132333435363738393031323334
+2025-06-02 15:41:57,884 - INFO - Connection closed
+2025-06-02 15:41:57,885 - INFO - Received response for SRI
+2025-06-02 15:41:57,885 - DEBUG - Raw response: 090003000000050005001a1234567890123456789004180201023013020104040e3132333435363738393031323334
+2025-06-02 15:41:57,885 - ERROR - No TCAP_ReturnResultLast layer in response: 090003000000050005001a1234567890123456789004180201023013020104040e3132333435363738393031323334
+2025-06-02 15:41:57,885 - ERROR - Database storage error: table responses has no column named raw_response
+2025-06-02 15:51:02,688 - INFO - Configuration loaded successfully
+2025-06-02 15:51:02,690 - INFO - Configuration loaded successfully
+2025-06-02 15:51:02,695 - INFO - Sending SRI packet to 127.0.0.1:2905 with protocol SCTP
+2025-06-02 15:51:02,696 - ERROR - Connection error: [Errno 111] Connection refused
+2025-06-02 15:51:02,696 - ERROR - Send/receive error: [Errno 111] Connection refused
+2025-06-02 15:51:02,696 - INFO - Connection closed
+2025-06-02 15:51:02,696 - ERROR - Failed to send SRI packet: [Errno 111] Connection refused
+2025-06-02 16:18:50,964 - INFO - Configuration loaded successfully
+2025-06-02 16:18:50,965 - INFO - Configuration loaded successfully
+2025-06-02 16:18:50,971 - INFO - Sending SRI packet to 127.0.0.1:2905 with protocol TCP
+2025-06-02 16:18:50,971 - DEBUG - Attempting TCP connection to 127.0.0.1:2905
+2025-06-02 16:18:50,971 - INFO - Successfully connected to 127.0.0.1:2905
+2025-06-02 16:18:50,971 - DEBUG - Sending data: 0900030A1100050005002321436587091234567890021F0C1F02020104041931323334353637383930313233343539383736353433323130
+2025-06-02 16:18:50,972 - DEBUG - Received response: 090003000000050005001A2143658709214365870904180201023013020104040E3132333435363738393031323334
+2025-06-02 16:18:50,973 - INFO - TCP connection to 127.0.0.1:2905 closed
+2025-06-02 16:18:50,973 - DEBUG - Raw response: 090003000000050005001a2143658709214365870904180201023013020104040e3132333435363738393031323334
+2025-06-02 16:18:50,973 - ERROR - No TCAP_ReturnResultLast layer in response: 090003000000050005001a2143658709214365870904180201023013020104040e3132333435363738393031323334
+2025-06-02 16:32:08,973 - INFO - Configuration loaded successfully
+2025-06-02 16:32:08,974 - INFO - Configuration loaded successfully
+2025-06-02 16:32:08,979 - INFO - Sending SRI packet to 127.0.0.1:2905 with protocol TCP
+2025-06-02 16:32:08,979 - DEBUG - Attempting TCP connection to 127.0.0.1:2905
+2025-06-02 16:32:08,979 - INFO - Successfully connected to 127.0.0.1:2905
+2025-06-02 16:32:08,979 - DEBUG - Sending data: 0900030A1100050005002321436587091234567890021F0C1F02020104041931323334353637383930313233343539383736353433323130
+2025-06-02 16:32:08,981 - DEBUG - Received response: 090003000000050005001A2143658709214365870904180201023013020104040E3132333435363738393031323334
+2025-06-02 16:32:08,981 - INFO - TCP connection to 127.0.0.1:2905 closed
+2025-06-02 16:32:08,981 - DEBUG - Raw response: 090003000000050005001a2143658709214365870904180201023013020104040e3132333435363738393031323334
+2025-06-02 16:32:08,981 - DEBUG - SCCP_UDT fields: {'msg_type': 9, 'protocol_class': 0, 'pointer1': 3, 'pointer2': 0, 'pointer3': 0, 'called_len': 5, 'calling_len': 5, 'data_len': 26, 'called_party': b'!Ce\x87\t', 'calling_party': b'!Ce\x87\t', 'data': b'\x04\x18\x02\x01\x020\x13\x02\x01\x04\x04\x0e12345678901234'}
+2025-06-02 16:32:08,981 - ERROR - No TCAP_ReturnResultLast layer in response: 090003000000050005001a2143658709214365870904180201023013020104040e3132333435363738393031323334
+2025-06-02 16:48:07,530 - INFO - Configuration loaded successfully
+2025-06-02 16:48:07,532 - INFO - Configuration loaded successfully
+2025-06-02 16:48:07,546 - INFO - Sending SRI packet to 127.0.0.1:2905 with protocol TCP
+2025-06-02 16:48:07,546 - DEBUG - Attempting TCP connection to 127.0.0.1:2905
+2025-06-02 16:48:07,546 - INFO - Successfully connected to 127.0.0.1:2905
+2025-06-02 16:48:07,547 - DEBUG - Sending data: 0900030A1100050005002321436587091234567890021F0C1F02020104041931323334353637383930313233343539383736353433323130
+2025-06-02 16:48:07,548 - DEBUG - Received response: 090003000000050005001A2143658709214365870904180201023013020104
+2025-06-02 16:48:07,548 - INFO - TCP connection to 127.0.0.1:2905 closed
+2025-06-02 16:48:07,548 - DEBUG - Raw response: 090003000000050005001a2143658709214365870904180201023013020104
+2025-06-02 16:48:07,549 - DEBUG - SCCP_UDT fields: {'msg_type': 9, 'protocol_class': 0, 'pointer1': 3, 'pointer2': 0, 'pointer3': 0, 'called_len': 5, 'calling_len': 5, 'data_len': 26, 'called_party': b'!Ce\x87\t', 'calling_party': b'!Ce\x87\t', 'data': b'\x04\x18\x02\x01\x020\x13\x02\x01\x04'}
+2025-06-02 16:48:07,549 - ERROR - No TCAP_ReturnResultLast layer in response: 090003000000050005001a2143658709214365870904180201023013020104
+2025-06-02 16:57:11,460 - INFO - Configuration loaded successfully
+2025-06-02 16:57:11,462 - INFO - Configuration loaded successfully
+2025-06-02 16:57:11,467 - INFO - Sending SRI packet to 127.0.0.1:2905 with protocol TCP
+2025-06-02 16:57:11,467 - DEBUG - Attempting TCP connection to 127.0.0.1:2905
+2025-06-02 16:57:11,467 - INFO - Successfully connected to 127.0.0.1:2905
+2025-06-02 16:57:11,467 - DEBUG - Sending data: 0900030A1100050005002321436587091234567890021F0C1F02020104041931323334353637383930313233343539383736353433323130
+2025-06-02 16:57:11,469 - DEBUG - Received response: 090003000000050005000A2143658709214365870904180201023013020104
+2025-06-02 16:57:11,469 - INFO - TCP connection to 127.0.0.1:2905 closed
+2025-06-02 16:57:11,469 - DEBUG - Raw response: 090003000000050005000a2143658709214365870904180201023013020104
+2025-06-02 16:57:11,469 - DEBUG - SCCP_UDT fields: {'msg_type': 9, 'protocol_class': 0, 'pointer1': 3, 'pointer2': 0, 'pointer3': 0, 'called_len': 5, 'calling_len': 5, 'data_len': 10, 'called_party': b'!Ce\x87\t', 'calling_party': b'!Ce\x87\t', 'data': b'\x04\x18\x02\x01\x020\x13\x02\x01\x04'}
+2025-06-02 16:57:11,469 - DEBUG - SCCP_UDT data: 04180201023013020104
+2025-06-02 16:57:11,469 - ERROR - No TCAP_ReturnResultLast layer in response: 090003000000050005000a2143658709214365870904180201023013020104
+2025-06-09 10:25:52,261 - INFO - Configuration loaded successfully
+2025-06-09 10:25:52,264 - INFO - Configuration loaded successfully
+2025-06-09 10:25:52,280 - INFO - Sending SRI packet to 127.0.0.1:2905 with protocol TCP
+2025-06-09 10:25:52,280 - DEBUG - Attempting TCP connection to 127.0.0.1:2905
+2025-06-09 10:25:52,281 - INFO - Successfully connected to 127.0.0.1:2905
+2025-06-09 10:25:52,281 - DEBUG - Sending data: 0900030A1100050005002321436587091234567890021F0C1F02020104041931323334353637383930313233343539383736353433323130
+2025-06-09 10:25:52,284 - DEBUG - Received response: 090003000000050005000A2143658709214365870904180201023013020104
+2025-06-09 10:25:52,284 - INFO - TCP connection to 127.0.0.1:2905 closed
+2025-06-09 10:25:52,284 - DEBUG - Raw response: 090003000000050005000a2143658709214365870904180201023013020104
+2025-06-09 10:25:52,284 - DEBUG - SCCP_UDT fields: {'msg_type': 9, 'protocol_class': 0, 'pointer1': 3, 'pointer2': 0, 'pointer3': 0, 'called_len': 5, 'calling_len': 5, 'data_len': 10, 'called_party': b'!Ce\x87\t', 'calling_party': b'!Ce\x87\t', 'data': b'\x04\x18\x02\x01\x020\x13\x02\x01\x04'}
+2025-06-09 10:25:52,284 - DEBUG - SCCP_UDT data: 04180201023013020104
+2025-06-09 10:25:52,284 - ERROR - No TCAP_ReturnResultLast layer in response: 090003000000050005000a2143658709214365870904180201023013020104
+2025-06-09 10:52:39,112 - INFO - Configuration loaded successfully
+2025-06-09 10:52:39,114 - INFO - Configuration loaded successfully
+2025-06-09 10:52:39,154 - INFO - Sending SRI packet to 127.0.0.1:2905 with protocol TCP
+2025-06-09 10:52:39,155 - DEBUG - Attempting TCP connection to 127.0.0.1:2905
+2025-06-09 10:52:39,155 - INFO - Successfully connected to 127.0.0.1:2905
+2025-06-09 10:52:39,155 - DEBUG - Sending data: 0900030A1100050005002321436587091234567890021F0C1F02020104041931323334353637383930313233343539383736353433323130
+2025-06-09 10:52:39,157 - DEBUG - Received response: 090003000000050005001A2143658709214365870904180201023013020104040E3132333435363738393031323334
+2025-06-09 10:52:39,157 - INFO - TCP connection to 127.0.0.1:2905 closed
+2025-06-09 10:52:39,157 - DEBUG - Raw response: 090003000000050005001a2143658709214365870904180201023013020104040e3132333435363738393031323334
+2025-06-09 10:52:39,157 - DEBUG - SCCP_UDT fields: {'msg_type': 9, 'protocol_class': 0, 'pointer1': 3, 'pointer2': 0, 'pointer3': 0, 'called_len': 5, 'calling_len': 5, 'data_len': 26, 'called_party': b'!Ce\x87\t', 'calling_party': b'!Ce\x87\t', 'data': b'\x04\x18\x02\x01\x020\x13\x02\x01\x04\x04\x0e12345678901234'}
+2025-06-09 10:52:39,157 - DEBUG - SCCP_UDT data: 04180201023013020104040e3132333435363738393031323334
+2025-06-09 10:52:39,157 - ERROR - No TCAP_ReturnResultLast layer in response: 090003000000050005001a2143658709214365870904180201023013020104040e3132333435363738393031323334
+2025-06-09 10:59:43,135 - INFO - Configuration loaded successfully
+2025-06-09 10:59:43,137 - INFO - Configuration loaded successfully
+2025-06-09 10:59:43,151 - INFO - Sending SRI packet to 127.0.0.1:2905 with protocol TCP
+2025-06-09 10:59:43,151 - DEBUG - Attempting TCP connection to 127.0.0.1:2905
+2025-06-09 10:59:43,151 - INFO - Successfully connected to 127.0.0.1:2905
+2025-06-09 10:59:43,152 - DEBUG - Sending data: 0900030A1100050005002321436587091234567890021F0C1F02020104041931323334353637383930313233343539383736353433323130
+2025-06-09 10:59:43,153 - DEBUG - Received response: 09000300000005000500002143658709214365870904180201023013020104040E3132333435363738393031323334
+2025-06-09 10:59:43,153 - INFO - TCP connection to 127.0.0.1:2905 closed
+2025-06-09 10:59:43,153 - DEBUG - Raw response: 09000300000005000500002143658709214365870904180201023013020104040e3132333435363738393031323334
+2025-06-09 10:59:43,153 - DEBUG - SCCP_UDT fields: {'msg_type': 9, 'protocol_class': 0, 'pointer1': 3, 'pointer2': 0, 'pointer3': 0, 'called_len': 5, 'calling_len': 5, 'data_len': 0, 'called_party': b'!Ce\x87\t', 'calling_party': b'!Ce\x87\t', 'data': b''}
+2025-06-09 10:59:43,153 - DEBUG - SCCP_UDT data: 
+2025-06-09 10:59:43,153 - ERROR - No TCAP_ReturnResultLast layer in response: 09000300000005000500002143658709214365870904180201023013020104040e3132333435363738393031323334
+2025-06-09 11:00:18,992 - INFO - Configuration loaded successfully
+2025-06-09 11:00:18,994 - INFO - Configuration loaded successfully
+2025-06-09 11:00:19,000 - INFO - Sending SRI packet to 127.0.0.1:2905 with protocol TCP
+2025-06-09 11:00:19,000 - DEBUG - Attempting TCP connection to 127.0.0.1:2905
+2025-06-09 11:00:19,000 - INFO - Successfully connected to 127.0.0.1:2905
+2025-06-09 11:00:19,000 - DEBUG - Sending data: 0900030A1100050005002321436587091234567890021F0C1F02020104041931323334353637383930313233343539383736353433323130
+2025-06-09 11:00:19,002 - DEBUG - Received response: 09000300000005000500002143658709214365870904180201023013020104040E3132333435363738393031323334
+2025-06-09 11:00:19,002 - INFO - TCP connection to 127.0.0.1:2905 closed
+2025-06-09 11:00:19,002 - DEBUG - Raw response: 09000300000005000500002143658709214365870904180201023013020104040e3132333435363738393031323334
+2025-06-09 11:00:19,002 - DEBUG - SCCP_UDT fields: {'msg_type': 9, 'protocol_class': 0, 'pointer1': 3, 'pointer2': 0, 'pointer3': 0, 'called_len': 5, 'calling_len': 5, 'data_len': 0, 'called_party': b'!Ce\x87\t', 'calling_party': b'!Ce\x87\t', 'data': b''}
+2025-06-09 11:00:19,002 - DEBUG - SCCP_UDT data: 
+2025-06-09 11:00:19,002 - ERROR - No TCAP_ReturnResultLast layer in response: 09000300000005000500002143658709214365870904180201023013020104040e3132333435363738393031323334
+2025-06-09 11:17:44,744 - INFO - Configuration loaded successfully
+2025-06-09 11:17:44,745 - INFO - Configuration loaded successfully
+2025-06-09 11:17:44,750 - INFO - Sending SRI packet to 127.0.0.1:2905 with protocol TCP
+2025-06-09 11:17:44,750 - DEBUG - Attempting TCP connection to 127.0.0.1:2905
+2025-06-09 11:17:44,750 - INFO - Successfully connected to 127.0.0.1:2905
+2025-06-09 11:17:44,750 - DEBUG - Sending data: 0900030A1100050005002321436587091234567890021F0C1F02020104041931323334353637383930313233343539383736353433323130
+2025-06-09 11:17:44,752 - DEBUG - Received response: 090003000000050005001A2143658709214365870904180201023013020104040E3132333435363738393031323334
+2025-06-09 11:17:44,752 - INFO - TCP connection to 127.0.0.1:2905 closed
+2025-06-09 11:17:44,752 - DEBUG - Raw response: 090003000000050005001a2143658709214365870904180201023013020104040e3132333435363738393031323334
+2025-06-09 11:17:44,752 - DEBUG - SCCP_UDT fields: {'msg_type': 9, 'protocol_class': 0, 'pointer1': 3, 'pointer2': 0, 'pointer3': 0, 'called_len': 5, 'calling_len': 5, 'data_len': 26, 'called_party': b'!Ce\x87\t', 'calling_party': b'!Ce\x87\t', 'data': b'\x04\x18\x02\x01\x020\x13\x02\x01\x04\x04\x0e12345678901234'}
+2025-06-09 11:17:44,752 - DEBUG - SCCP_UDT data: 04180201023013020104040e3132333435363738393031323334
+2025-06-09 11:17:44,752 - DEBUG - TCAP tag: 0x4
+2025-06-09 11:17:44,752 - DEBUG - TCAP_ReturnResultLast fields: {'tag': 4, 'component_len': 24, 'invoke_id_tag': 2, 'invoke_id_len': 1, 'invoke_id': 2, 'sequence_tag': 48, 'sequence_len': 19, 'opcode_tag': 2, 'opcode_len': 1, 'opcode': 4}
+2025-06-09 11:17:44,752 - DEBUG - MAP_SRI fields: {'tag': 4, 'len': 14, 'imsi': b'12345678', 'msisdn': b'901234'}
+2025-06-09 11:17:44,752 - DEBUG - Parsed result: {'status': 'success', 'invoke_id': 2, 'opcode': 4, 'operation': 'MAP_SRI', 'params': {'imsi': '12345678', 'msisdn': '901234'}, 'raw_response': '090003000000050005001a2143658709214365870904180201023013020104040e3132333435363738393031323334'}
+2025-06-09 11:39:12,920 - INFO - Configuration loaded successfully
+2025-06-09 11:39:12,921 - INFO - Configuration loaded successfully
+2025-06-09 11:39:12,936 - INFO - Sending SRI packet to 127.0.0.1:2905 with protocol TCP
+2025-06-09 11:39:12,936 - DEBUG - Attempting TCP connection to 127.0.0.1:2905
+2025-06-09 11:39:12,936 - INFO - Successfully connected to 127.0.0.1:2905
+2025-06-09 11:39:12,936 - DEBUG - Sending data: 0900030A1100050005002321436587091234567890021F0C1F02020104041931323334353637383930313233343539383736353433323130
+2025-06-09 11:39:12,938 - DEBUG - Received response: 090003000000050005001A2143658709214365870904180201023013020104040E3132333435363738393031323334
+2025-06-09 11:39:12,938 - INFO - TCP connection to 127.0.0.1:2905 closed
+2025-06-09 11:39:12,938 - DEBUG - Raw response: 090003000000050005001a2143658709214365870904180201023013020104040e3132333435363738393031323334
+2025-06-09 11:39:12,938 - DEBUG - SCCP_UDT fields: {'msg_type': 9, 'protocol_class': 0, 'pointer1': 3, 'pointer2': 0, 'pointer3': 0, 'called_len': 5, 'calling_len': 5, 'data_len': 26, 'called_party': b'!Ce\x87\t', 'calling_party': b'!Ce\x87\t', 'data': b'\x04\x18\x02\x01\x020\x13\x02\x01\x04\x04\x0e12345678901234'}
+2025-06-09 11:39:12,938 - DEBUG - SCCP_UDT data: 04180201023013020104040e3132333435363738393031323334
+2025-06-09 11:39:12,938 - DEBUG - TCAP tag: 0x4
+2025-06-09 11:39:12,938 - DEBUG - TCAP_ReturnResultLast fields: {'tag': 4, 'component_len': 24, 'invoke_id_tag': 2, 'invoke_id_len': 1, 'invoke_id': 2, 'sequence_tag': 48, 'sequence_len': 19, 'opcode_tag': 2, 'opcode_len': 1, 'opcode': 4}
+2025-06-09 11:39:12,938 - DEBUG - MAP_SRI fields: {'tag': 4, 'len': 14, 'imsi': b'12345678', 'msisdn': b'901234'}
+2025-06-09 11:39:12,938 - DEBUG - Parsed result: {'status': 'success', 'invoke_id': 2, 'opcode': 4, 'operation': 'MAP_SRI', 'params': {'imsi': '12345678', 'msisdn': '901234'}, 'raw_response': '090003000000050005001a2143658709214365870904180201023013020104040e3132333435363738393031323334'}
+2025-06-09 11:48:05,638 - INFO - Configuration loaded successfully
+2025-06-09 11:48:05,639 - INFO - Configuration loaded successfully
+2025-06-09 11:48:05,655 - INFO - Sending SRI packet to 127.0.0.1:2905 with protocol TCP
+2025-06-09 11:48:05,655 - DEBUG - Attempting TCP connection to 127.0.0.1:2905
+2025-06-09 11:48:05,655 - INFO - Successfully connected to 127.0.0.1:2905
+2025-06-09 11:48:05,655 - DEBUG - Sending data: 0900030A1100050005002321436587091234567890021F0C1F02020104041931323334353637383930313233343539383736353433323130
+2025-06-09 11:48:05,657 - DEBUG - Received response: 090003000000050005001A2143658709214365870904180201023013020104040E3132333435363738393031323334
+2025-06-09 11:48:05,657 - INFO - TCP connection to 127.0.0.1:2905 closed
+2025-06-09 11:48:05,657 - DEBUG - Raw response: 090003000000050005001a2143658709214365870904180201023013020104040e3132333435363738393031323334
+2025-06-09 11:48:05,657 - DEBUG - SCCP_UDT fields: {'msg_type': 9, 'protocol_class': 0, 'pointer1': 3, 'pointer2': 0, 'pointer3': 0, 'called_len': 5, 'calling_len': 5, 'data_len': 26, 'called_party': b'!Ce\x87\t', 'calling_party': b'!Ce\x87\t', 'data': b'\x04\x18\x02\x01\x020\x13\x02\x01\x04\x04\x0e12345678901234'}
+2025-06-09 11:48:05,657 - DEBUG - SCCP_UDT data: 04180201023013020104040e3132333435363738393031323334
+2025-06-09 11:48:05,657 - DEBUG - TCAP tag: 0x4
+2025-06-09 11:48:05,658 - DEBUG - TCAP_ReturnResultLast fields: {'tag': 4, 'component_len': 24, 'invoke_id_tag': 2, 'invoke_id_len': 1, 'invoke_id': 2, 'sequence_tag': 48, 'sequence_len': 19, 'opcode_tag': 2, 'opcode_len': 1, 'opcode': 4}
+2025-06-09 11:48:05,658 - DEBUG - MAP_SRI fields: {'tag': 4, 'len': 14, 'imsi': b'12345678', 'msisdn': b'901234'}
+2025-06-09 11:48:05,658 - DEBUG - Parsed result: {'status': 'success', 'invoke_id': 2, 'opcode': 4, 'operation': 'MAP_SRI', 'params': {'imsi': '12345678', 'msisdn': '901234'}, 'raw_response': '090003000000050005001a2143658709214365870904180201023013020104040e3132333435363738393031323334'}
+2025-06-09 12:09:45,298 - INFO - Configuration loaded successfully
+2025-06-09 12:09:45,300 - INFO - Configuration loaded successfully
+2025-06-09 12:09:45,340 - INFO - Sending SRI packet to 127.0.0.1:2905 with protocol TCP
+2025-06-09 12:09:45,340 - DEBUG - Attempting TCP connection to 127.0.0.1:2905
+2025-06-09 12:09:45,341 - INFO - Successfully connected to 127.0.0.1:2905
+2025-06-09 12:09:45,341 - DEBUG - Sending data: 0900030A1100050005002321436587091234567890021F0C1F02020104041931323334353637383930313233343539383736353433323130
+2025-06-09 12:09:45,342 - DEBUG - Received response: 0900030000000500050025214365870921436587090423020102301E020104041931323334353637383930313233343539383736353433323130
+2025-06-09 12:09:45,342 - INFO - TCP connection to 127.0.0.1:2905 closed
+2025-06-09 12:09:45,342 - DEBUG - Raw response: 0900030000000500050025214365870921436587090423020102301e020104041931323334353637383930313233343539383736353433323130
+2025-06-09 12:09:45,343 - DEBUG - SCCP_UDT fields: {'msg_type': 9, 'protocol_class': 0, 'pointer1': 3, 'pointer2': 0, 'pointer3': 0, 'called_len': 5, 'calling_len': 5, 'data_len': 37, 'called_party': b'!Ce\x87\t', 'calling_party': b'!Ce\x87\t', 'data': b'\x04#\x02\x01\x020\x1e\x02\x01\x04\x04\x191234567890123459876543210'}
+2025-06-09 12:09:45,343 - DEBUG - SCCP_UDT data: 0423020102301e020104041931323334353637383930313233343539383736353433323130
+2025-06-09 12:09:45,343 - DEBUG - TCAP tag: 0x4
+2025-06-09 12:09:45,343 - DEBUG - TCAP_ReturnResultLast fields: {'tag': 4, 'component_len': 35, 'invoke_id_tag': 2, 'invoke_id_len': 1, 'invoke_id': 2, 'sequence_tag': 48, 'sequence_len': 30, 'opcode_tag': 2, 'opcode_len': 1, 'opcode': 4}
+2025-06-09 12:09:45,343 - DEBUG - MAP_SRI fields: {'tag': 4, 'len': 25, 'imsi': b'123456789012345', 'msisdn': b'9876543210'}
+2025-06-09 12:09:45,343 - DEBUG - Parsed result: {'status': 'success', 'invoke_id': 2, 'opcode': 4, 'operation': 'MAP_SRI', 'params': {'imsi': '123456789012345', 'msisdn': '9876543210'}, 'raw_response': '0900030000000500050025214365870921436587090423020102301e020104041931323334353637383930313233343539383736353433323130'}

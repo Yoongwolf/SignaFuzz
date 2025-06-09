@@ -15,6 +15,18 @@ class TestMessageFactory(unittest.TestCase):
             ssn=6
         )
         sccp = SCCP_UDT(packet)
+        from scapy.all import hexdump
+        print("SRI Packet hexdump:")
+        hexdump(packet)
+        print("Has TCAP_Invoke:", sccp.haslayer(TCAP_Invoke))
+        print("Packet layers:", [layer.__class__.__name__ for layer in sccp if layer])
+        print("Data field hex:", sccp.data.hex() if sccp.data else "None")
+        try:
+            tcap = TCAP_Invoke(sccp.data)
+            print("Manual TCAP_Invoke parse:")
+            tcap.show()
+        except Exception as e:
+            print("Manual parse error:", str(e))
         self.assertTrue(sccp.haslayer(TCAP_Invoke))
         self.assertEqual(sccp[TCAP_Invoke].opcode, 4)
 
@@ -25,6 +37,18 @@ class TestMessageFactory(unittest.TestCase):
             ssn=6
         )
         sccp = SCCP_UDT(packet)
+        from scapy.all import hexdump
+        print("ATI Packet hexdump:")
+        hexdump(packet)
+        print("Has TCAP_Invoke:", sccp.haslayer(TCAP_Invoke))
+        print("Packet layers:", [layer.__class__.__name__ for layer in sccp if layer])
+        print("Data field hex:", sccp.data.hex() if sccp.data else "None")
+        try:
+            tcap = TCAP_Invoke(sccp.data)
+            print("Manual TCAP_Invoke parse:")
+            tcap.show()
+        except Exception as e:
+            print("Manual parse error:", str(e))
         self.assertTrue(sccp.haslayer(TCAP_Invoke))
         self.assertEqual(sccp[TCAP_Invoke].opcode, 71)
 
@@ -36,6 +60,18 @@ class TestMessageFactory(unittest.TestCase):
             ssn=6
         )
         sccp = SCCP_UDT(packet)
+        from scapy.all import hexdump
+        print("UL Packet hexdump:")
+        hexdump(packet)
+        print("Has TCAP_Invoke:", sccp.haslayer(TCAP_Invoke))
+        print("Packet layers:", [layer.__class__.__name__ for layer in sccp if layer])
+        print("Data field hex:", sccp.data.hex() if sccp.data else "None")
+        try:
+            tcap = TCAP_Invoke(sccp.data)
+            print("Manual TCAP_Invoke parse:")
+            tcap.show()
+        except Exception as e:
+            print("Manual parse error:", str(e))
         self.assertTrue(sccp.haslayer(TCAP_Invoke))
         self.assertEqual(sccp[TCAP_Invoke].opcode, 2)
 
@@ -46,6 +82,18 @@ class TestMessageFactory(unittest.TestCase):
             ssn=6
         )
         sccp = SCCP_UDT(packet)
+        from scapy.all import hexdump
+        print("PSI Packet hexdump:")
+        hexdump(packet)
+        print("Has TCAP_Invoke:", sccp.haslayer(TCAP_Invoke))
+        print("Packet layers:", [layer.__class__.__name__ for layer in sccp if layer])
+        print("Data field hex:", sccp.data.hex() if sccp.data else "None")
+        try:
+            tcap = TCAP_Invoke(sccp.data)
+            print("Manual TCAP_Invoke parse:")
+            tcap.show()
+        except Exception as e:
+            print("Manual parse error:", str(e))
         self.assertTrue(sccp.haslayer(TCAP_Invoke))
         self.assertEqual(sccp[TCAP_Invoke].opcode, 59)
 
