@@ -1,4 +1,4 @@
-SSS7 Security Research Tool (v0.2.0)
+SS7 Security Research Tool (v0.2.0)
 A Python-based tool for sending MAP-layer SS7 messages (SendRoutingInfo, AnyTimeInterrogation, UpdateLocation, ProvideSubscriberInfo) over SCTP/TCP to a lab SS7 network, parsing responses, and logging transactions.
 Features
 
